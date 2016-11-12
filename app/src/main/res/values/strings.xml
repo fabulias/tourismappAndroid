@@ -13,4 +13,56 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+
+    <!-- API KEY -->
+    <string name="google_maps_key"> AIzaSyBUmLW481yj2a3U3CAiSK1P4CjRDy09wIo</string>
+
+
+    <!-- String to AndroidManifiest.xml-->
+    <string name="compartir">Compartir</string>
+    <string name="perfil">Perfil de Usuario</string>
+
+
+    <!-- Strings to activity_perfil.xml-->
+    <string name="img_default">img_default</string>
+    <string name="name_user">Nicolas</string>
+    <string name="surname">Ojeda</string>
+    <string name="s_surname">Recabarren</string>
+    <string name="mail_perfil">Nico_ojeda@mail.org</string>
+    <string name="nameuser_perfil">Nicokawai666</string>
+    <string name="password_perfil">*****</string>
+    <string name="btnPass">Cambiar Password</string>
+    <string name="btnGuardar">Guardar</string>
+
+    <!-- Strings activity:share_place.xml -->
+    <string name="share_places">Comparte lo que quieras!</string>
+    <string name="name_shareplace">Nombre :</string>
+    <string name="nameplace">La picada de toesca</string>
+    <string name="location">Toesca #1234</string>
+    <string name="schedule_word">Horario:</string>
+    <string name="SelectTagWord">Seleccione Tags</string>
+    <string name="shareplace">Compatir!</string>
+    <string name="title_activity_maps">Map</string>
+
+    <!-- String activity_main_drawer-->
+    <string name="prefBus">Preferencias de Búsqueda</string>
+    <string name="Favoritos">Favoritos</string>
+    <string name="Mcoment">Mis comentarios</string>
+    <string name="ConfCuent">Configuración de Cuenta</string>
+    <string name="support">Suppot</string>
+    <string name="Logout">Cerrar Sesión</string>
+
+    <!-- String nav_header_main.xml -->
+    <string name="NameTour">TourismAPP</string>
+    <string name="mailsupport">Tourismapp@tour.com</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 </resources>

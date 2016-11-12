@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.05"
+        android:background="@android:color/holo_orange_light">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/share_places"
+            android:textSize="40sp"
+            android:textStyle="italic"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"/>
+    </FrameLayout>
+    <!-- Name Place  -->
+    <RelativeLayout
+        android:id="@+id/name_shareplace"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+
+        >
+
+        <TextView
+            android:layout_marginTop="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="@string/name_shareplace"
+            android:id="@+id/nombre"/>
+        <EditText
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/nameplace"
+            android:inputType="text"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/nombre"
+            android:layout_toEndOf="@+id/nombre"
+            android:textSize="20sp"/>
+
+    </RelativeLayout>
+
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.005"
+        android:background="@android:color/black">
+
+    </LinearLayout>
+    <!-- Location Place -->
+    <RelativeLayout
+        android:id="@+id/locacion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginLeft="12dp"
+        >
+        <TextView
+            android:layout_marginTop="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="@string/name_shareplace"
+            android:id="@+id/ubicacion"/>
+        <EditText
+            android:id="@+id/locate"
+            android:layout_marginTop="@dimen/locate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/location"
+            android:inputType="text"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/ubicacion"
+            android:layout_toEndOf="@+id/ubicacion"
+            android:textSize="20sp"/>
+    </RelativeLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.005"
+        android:background="@android:color/black">
+
+    </LinearLayout>
+    <!-- Schedule Place -->
+    <RelativeLayout
+        android:id="@+id/locacion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginLeft="12dp"
+        >
+        <TextView
+            android:layout_marginTop="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="@string/schedule_word"
+            android:id="@+id/schedule"/>
+        <EditText
+            android:id="@+id/open_sc"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="50dp"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:inputType="time"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/schedule"
+            android:textSize="20sp" />
+        <EditText
+            android:layout_centerHorizontal="true"
+            android:id="@+id/close_sc"
+            android:layout_marginTop="20dp"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:inputType="time"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/open_sc"
+            android:layout_toEndOf="@+id/open_sc"
+            android:textSize="20sp"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.005"
+        android:background="@android:color/black">
+
+    </LinearLayout>
+    <!-- Seleccionar TAGSSSS-->
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:text="@string/SelectTagWord"
+        android:id="@+id/Tagselect"
+        android:background="@android:color/holo_green_light"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:text="@string/shareplace"
+        android:id="@+id/shareplace"
+        android:background="@android:color/holo_red_light"/>
+
+</LinearLayout>
