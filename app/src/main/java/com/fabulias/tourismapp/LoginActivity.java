@@ -3,6 +3,7 @@ package com.fabulias.tourismapp;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -19,6 +20,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.JsonReader;
+import android.util.PrintWriterPrinter;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,7 +31,20 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,13 +59,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
+    public final static String EXTRA_MESSAGE = "com.fabulias.MESSAGE";
 
     /**
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
      */
     private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
+            "foo@example.com:hellOA123", "bar@example.com:world"
     };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -159,13 +176,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         boolean cancel = false;
         View focusView = null;
 
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
-            cancel = true;
-        }
-
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
             mEmailView.setError(getString(R.string.error_field_required));
@@ -174,6 +184,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         } else if (!isEmailValid(email)) {
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
+            cancel = true;
+        }
+
+        // Check for a valid password, if the user entered one.
+        if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
+            mPasswordView.setError(getString(R.string.error_invalid_password));
+            focusView = mPasswordView;
             cancel = true;
         }
 
@@ -186,18 +203,23 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // perform the user login attempt.
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            String url = "https://ttourismapp.herokuapp.com/api/v1/customers";
+            mAuthTask.execute(url);
         }
     }
 
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
-        return email.contains("@");
+        String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
+        java.util.regex.Matcher m = p.matcher(email);
+        return m.matches();
     }
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 4;
+        String regexp = "^(?=.*[0-9]).{3,10}$"; //(?=.*[a-z])(?=.*[A-Z])
+        return password.matches(regexp);
     }
 
     /**
@@ -294,7 +316,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserLoginTask extends AsyncTask<String, String, String> {
 
         private final String mEmail;
         private final String mPassword;
@@ -304,39 +326,83 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mPassword = password;
         }
 
+        HttpURLConnection urlConnection;
+
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected String doInBackground(String... params) {
             // TODO: attempt authentication against a network service.
-
+            StringBuilder result = new StringBuilder();
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the pas sword matches.
-                    return pieces[1].equals(mPassword);
+                URL url = new URL(params[0] + "/" + mEmail);
+                urlConnection = (HttpURLConnection) url.openConnection();
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    result.append(line);
                 }
-            }
 
-            // TODO: register the new account here.
-            return true;
+            }catch( Exception e) {
+                e.printStackTrace();
+                return "";
+            }
+            finally {
+                urlConnection.disconnect();
+            }
+            JSONObject jsonObj = null;
+            try {
+                jsonObj = new JSONObject(result.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return "";
+            }
+            try {
+                if (jsonObj.getString("status").equals("success")) {
+                    JSONArray c = jsonObj.getJSONArray("data");
+                    JSONObject jobj = c.getJSONObject(0);
+                    System.out.println("Success from API Good :) !!!");
+                    if (jobj.getString("pass").equals(mPassword)) {
+                        System.out.println("Acceso a usuario " + jobj.getString("rut"));
+                        return result.toString();
+                    } else {
+                        System.out.println("Claves no coindicen");
+                        return "";
+                    }
+
+                } else {
+                    System.out.println("Error from API Bad :( !!!");
+                    return "";
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return "";
+            }
+            // TODO: register the new account here!
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
+        protected void onPostExecute(final String success) {
+            //TextView t = (TextView) findViewById(R.id.activity_main);
+            //t.setText(success);
+            //Existe la persona
+            if (success.length() > 0 ) {
                 finish();
+                Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+                EditText editText = (EditText) findViewById(R.id.email);
+                String message = editText.getText().toString();
+                myIntent.putExtra(EXTRA_MESSAGE, message);
+                startActivity(myIntent);
+
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                //No existe la persona
+                System.out.println("Login nuevamente");
+                Intent myIntent = new Intent(LoginActivity.this, LoginActivity.class);
+                LoginActivity.this.startActivity(myIntent);
+                /*
+                setContentView(R.layout.activity_login);
+                Toast.makeText(LoginActivity.this, "CONTRASEÑA INCORRECTA!!!", Toast.LENGTH_SHORT).show();
+                System.out.println("NO existe  la persona!!!");
+                */
             }
         }
 
