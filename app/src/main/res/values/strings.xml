@@ -35,6 +35,9 @@
     <string name="btnPass">Cambiar Password</string>
     <string name="btnGuardar">Guardar</string>
 
+    <!-- String to Perfil.java-->
+
+
     <!-- Strings activity:share_place.xml -->
     <string name="share_places">Comparte lo que quieras!</string>
     <string name="name_shareplace">Nombre :</string>
