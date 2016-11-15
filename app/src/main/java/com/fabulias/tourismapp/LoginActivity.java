@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
-    public final static String EXTRA_MESSAGE = "com.fabulias.MESSAGE";
+    public final static String EXTRA_MESSAGE = "com.fabulias.login.MESSAGE";
 
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -155,6 +155,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
 
+    public void attemptRegister(View view) {
+
+        Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+        startActivity(intent);
+    }
+
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -202,14 +208,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new LoginActivity.UserLoginTask(email, password);
             String url = "https://ttourismapp.herokuapp.com/api/v1/customers";
             mAuthTask.execute(url);
         }
     }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
         String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
         java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
         java.util.regex.Matcher m = p.matcher(email);
@@ -217,7 +222,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
         String regexp = "^(?=.*[0-9]).{3,10}$"; //(?=.*[a-z])(?=.*[A-Z])
         return password.matches(regexp);
     }
@@ -396,11 +400,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             } else {
                 //No existe la persona
                 System.out.println("Login nuevamente");
+                Toast.makeText(LoginActivity.this, "CONTRASEÑA INCORRECTA!!!", Toast.LENGTH_SHORT).show();
                 Intent myIntent = new Intent(LoginActivity.this, LoginActivity.class);
                 LoginActivity.this.startActivity(myIntent);
                 /*
                 setContentView(R.layout.activity_login);
-                Toast.makeText(LoginActivity.this, "CONTRASEÑA INCORRECTA!!!", Toast.LENGTH_SHORT).show();
                 System.out.println("NO existe  la persona!!!");
                 */
             }

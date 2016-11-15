@@ -2,13 +2,16 @@
     <string name="app_name">TourismApp</string>
 
     <!-- Strings related to login -->
-    <string name="prompt_email">mail@example.cl</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Login</string>
-    <string name="action_reg">Register</string>
+    <string name="prompt_email">E-mail</string>
+    <string name="prompt_password">Contraseña</string>
+    <string name="action_sign_in">Iniciar sesión</string>
+    <string name="action_reg">Registrarse</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
+
+    <string name="error_incorrect_rut">This password is incorrect</string>
+    <string name="error_incorrect">This field is incorrect</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
@@ -66,4 +69,15 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+
+    <!-- Register activity -->
+    <string name="register">Registro</string>
+    <string name="reg_name">Nombre</string>
+    <string name="reg_sur">Primer apellido</string>
+    <string name="reg_s_sur">Segundo apellido</string>
+    <string name="reg_rut">Rut</string>
+    <string name="reg_email">Email</string>
+    <string name="reg_phone">Telefono</string>
+    <string name="reg_pass">Contraseña</string>
+    <string name="reg_save">Registrarme</string>
 </resources>
