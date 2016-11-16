@@ -311,6 +311,7 @@ public class RegisterActivity extends AppCompatActivity {
             if (success.length() > 0 ) {
                 System.out.println("Registrado");
                 finish();
+                Toast.makeText(RegisterActivity.this, "Ahora estas registrado", Toast.LENGTH_SHORT).show();
                 Intent myIntent = new Intent(RegisterActivity.this, LoginActivity.class);
                 EditText editText = (EditText) findViewById(R.id.email);
                 String message = editText.getText().toString();

@@ -25,13 +25,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBNL8z37atdR3eG36QRJEkkKitYx4Jsz6Q" />
 
-        <activity android:name=".Index">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".LoginActivity"
             android:label="@string/app_name">
@@ -42,7 +35,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Perfil"
+            android:name=".PerfilActivity"
             android:label="@string/perfil">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -50,10 +43,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".share_place"
-            android:label="@string/compartir" />
-        <activity android:name=".evaluation" />
         <!--
  ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -67,19 +56,9 @@
              Note that the API key is linked to the encryption key used to sign the APK.
              You need a different API key for each encryption key, including the release key that is used to
              sign the APK for publishing.
-             You can define the keys for the debug and release targets in src/debug/ and src/release/. 
+             You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
 
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".RegisterActivity"
             android:label="@string/app_name">

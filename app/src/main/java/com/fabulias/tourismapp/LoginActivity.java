@@ -391,7 +391,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             //Existe la persona
             if (success.length() > 0 ) {
                 finish();
-                Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+                Intent myIntent = new Intent(LoginActivity.this, LoginActivity.class);
                 EditText editText = (EditText) findViewById(R.id.email);
                 String message = editText.getText().toString();
                 myIntent.putExtra(EXTRA_MESSAGE, message);
