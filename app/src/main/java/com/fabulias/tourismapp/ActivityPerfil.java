@@ -354,8 +354,8 @@ public class ActivityPerfil extends AppCompatActivity {
             if (success.length() > 0) {
                 System.out.println("EDITADO PERFIL");
                 finish();
-                Toast.makeText(Perfil.this, "Perfil Actualizado", Toast.LENGTH_SHORT).show();
-                Intent myIntent = new Intent(Perfil.this, Perfil.class);
+                Toast.makeText(ActivityPerfil.this, "Perfil Actualizado", Toast.LENGTH_SHORT).show();
+                Intent myIntent = new Intent(ActivityPerfil.this, ActivityPerfil.class);
                /* EditText editText = (EditText) findViewById(R.id.email);
                 String message = editText.getText().toString();
                 myIntent.putExtra(EXTRA_MESSAGE, message); */
@@ -363,9 +363,9 @@ public class ActivityPerfil extends AppCompatActivity {
 
 
             } else {
-                Toast.makeText(Perfil.this, "Error al actualizar Perfil", Toast.LENGTH_SHORT).show();
-                Intent myIntent = new Intent(Perfil.this, Perfil.class);
-                Perfil.this.startActivity(myIntent);
+                Toast.makeText(ActivityPerfil.this, "Error al actualizar Perfil", Toast.LENGTH_SHORT).show();
+                Intent myIntent = new Intent(ActivityPerfil.this, ActivityPerfil.class);
+                ActivityPerfil.this.startActivity(myIntent);
                 /*
                 setContentView(R.layout.activity_login);
                 Toast.makeText(LoginActivity.this, "CONTRASEÑA INCORRECTA!!!", Toast.LENGTH_SHORT).show();

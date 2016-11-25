@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,6 +25,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import static android.R.attr.fragment;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, com.google.android.gms.maps.OnMapReadyCallback {
@@ -29,10 +34,15 @@ public class MainActivity extends AppCompatActivity
     private IndexMap mapa;
     private GoogleApiClient client;
 
+    private DrawerLayout drawer;
+
+    private String drawerTitle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -45,13 +55,22 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        if (navigationView != null) {
+            setupDrawerContent(navigationView);
+        }
+
+        drawerTitle = getResources().getString(R.string.prefBus);
+        if (savedInstanceState == null) {
+            selectItem(drawerTitle);
+        }
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
         navigationView.setNavigationItemSelectedListener(this);
         mapa = IndexMap.newInstance();
         getSupportFragmentManager()
@@ -62,9 +81,58 @@ public class MainActivity extends AppCompatActivity
         //IndexMap aux = (IndexMap) getFragmentManager().findFragmentById(R.id.map);
         System.out.println("HOLA IF");
         mapa.getMapAsync(this);
-
+        setToolbar();
 
     }
+
+    private void setToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        final ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            // Poner ícono del drawer toggle
+            ab.setHomeAsUpIndicator(R.mipmap.ic_launcher);
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
+
+    }
+
+    private void selectItem(String title) {
+        // Enviar título como arguemento del fragmento
+        Bundle args = new Bundle();
+        args.putString(PlaceHolderFragment.ARG_SECTION_TITLE, title);
+
+        Fragment fragment = PlaceHolderFragment.newInstance(title);
+        fragment.setArguments(args);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager
+                .beginTransaction()
+                .replace(R.id.content_main, fragment)
+                .commit();
+
+        drawer.closeDrawers(); // Cerrar drawer
+
+        setTitle(title); // Setear título actual
+
+    }
+
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        // Marcar item presionado
+                        menuItem.setChecked(true);
+                        // Crear nuevo fragmento
+                        String title = menuItem.getTitle().toString();
+                        selectItem(title);
+                        return true;
+                    }
+                }
+        );
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         LatLng pastos = new LatLng(-33.452672, -70.661285);
@@ -116,20 +184,31 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+        String Usermail = getIntent().getStringExtra("usermail");
+
         int id = item.getItemId();
+        System.out.println("Estoy en el onNavigation.... HOLAAAAAAAAA \n ");
+        Fragment fragment = null;
+        //System.out.printf("ID ->%d \n"   ,id);
+        if (id == R.id.Share_preferences) {
+            fragment =new PlaceHolderFragment();
+        } else if (id == R.id.favoritos) {
 
-        if (id == R.id.nav_camera) {
-            Intent ListSong= new Intent(getApplicationContext(),evaluation.class);
-            startActivity(ListSong);
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.comments) {
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
+        } else if (id == R.id.config_cuenta) {
+            Intent intent = new Intent(this,ActivityPerfil.class);
+            intent.putExtra("Email", Usermail);
+            startActivity(intent);
         } else if (id == R.id.support) {
 
-        } else if (id == R.id.logout){ 
+        } else if (id == R.id.logout){
+
+        }
+        if (fragment != null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.frame_container, fragment).commit();
 
         }
 

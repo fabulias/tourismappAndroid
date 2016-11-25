@@ -3,7 +3,9 @@ package com.fabulias.tourismapp;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -71,6 +73,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private EditText pass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,8 +105,20 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-    }
 
+        pass = (EditText) findViewById(R.id.email);
+        SharedPreferences mPreferencias=getSharedPreferences("DataUser", Context.MODE_PRIVATE);
+        pass.setText(mPreferencias.getString("mail",""));
+
+
+    }
+   /* public void ejecutar(View v) {
+        SharedPreferences preferences=getSharedPreferences("datos",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor=preferences.edit();
+        editor.putString("mail", pass.getText().toString());
+        editor.apply();
+        finish();
+    } */
     private void populateAutoComplete() {
         if (!mayRequestContacts()) {
             return;
@@ -356,6 +371,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     System.out.println("Success from API Good :) !!!");
                     if (jobj.getString("pass").equals(mPassword)) {
                         System.out.println("Acceso a usuario " + jobj.getString("rut"));
+                        SetDataUser(jobj);
                         return result.toString();
                     } else {
                         System.out.println("Claves no coindicen");
@@ -373,6 +389,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // TODO: register the new account here!
         }
 
+        protected void SetDataUser(JSONObject userData) throws JSONException {
+            SharedPreferences preferences=getSharedPreferences("DataUser",Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor=preferences.edit();
+            editor.putString("pass", userData.getString("pass"));
+            editor.putString("name", userData.getString("name"));
+            editor.putString("surname", userData.getString("surname"));
+            editor.putString("s_surname", userData.getString("s_surname"));
+            editor.apply();
+            finish();
+        }
         @Override
         protected void onPostExecute(final String success) {
             //TextView t = (TextView) findViewById(R.id.activity_main);
@@ -380,11 +406,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             //Existe la persona
             if (success.length() > 0 ) {
                 finish();
-                Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+                Intent myIntent = new Intent(LoginActivity.this, ActivityPerfil.class);
                 EditText editText = (EditText) findViewById(R.id.email);
                 String message = editText.getText().toString();
-                myIntent.putExtra(EXTRA_MESSAGE, message);
+                myIntent.putExtra("usermail", message);
                 startActivity(myIntent);
+
+
 
             } else {
                 //No existe la persona
