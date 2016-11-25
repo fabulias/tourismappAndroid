@@ -35,7 +35,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".PerfilActivity"
+            android:name=".ActivityPerfil"
             android:label="@string/perfil">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -71,6 +71,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity android:name=".ActivityAddPlace"></activity>
     </application>
 
 </manifest>

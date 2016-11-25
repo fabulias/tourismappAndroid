@@ -5,4 +5,9 @@
     <color name="colorAccent">#FF4081</color>
     <color name="light_black">#504f4f</color>
     <color name="black">#000000</color>
+    <color name="window_background">#FFF5F5F5</color>
+
+    <color name="primaryColor">#346D7D</color>
+    <color name="primaryDarkColor">#1F515F</color>
+    <color name="accentColor">#03A9F4</color>
 </resources>

@@ -8,6 +8,15 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin">
+
+    <ProgressBar
+        android:id="@+id/perfil_progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone" />
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,7 +26,21 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:contentDescription="" />
-    <EditText
+
+    <LinearLayout
+        android:id="@+id/email_login_form"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
+
+
+
+    <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/name_user"
@@ -26,7 +49,12 @@
         android:layout_below="@+id/photoperfil"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
-    <EditText
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/surname"
@@ -35,6 +63,11 @@
         android:layout_below="@+id/name_perfil"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"/>
+    </android.support.design.widget.TextInputLayout>
+
+     <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,18 +77,22 @@
         android:layout_below="@+id/surname"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"/>
-    <EditText
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/mail_perfil"
-        android:inputType="textEmailAddress"
-        android:id="@+id/mail_perfil"
+        android:text="TextView"
+        android:id="@+id/password"
         android:layout_below="@+id/s_surname"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+    </android.support.design.widget.TextInputLayout>
 
-
-    <Button
+   <!-- <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/btnPass"
@@ -63,17 +100,17 @@
         android:layout_centerHorizontal="true"
         android:checked="false"
         android:layout_below="@+id/mail_perfil"
-        android:background="@android:color/white"/>
+        android:background="@android:color/white"/> -->
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/btnGuardar"
-        android:id="@+id/Update_Perfil"
-        android:layout_below="@+id/btnPass"
-        android:layout_centerHorizontal="true"
-        android:background="@android:color/holo_green_light"
-        android:layout_marginRight="12dp"
-        android:layout_marginEnd="12dp" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btnGuardar"
+            android:id="@+id/Update_Perfil"
+            android:background="@android:color/holo_green_light"
+            android:layout_marginRight="12dp"
+            android:layout_marginEnd="12dp"
+            android:onClick=""/>
 
+    </LinearLayout>
 </RelativeLayout>

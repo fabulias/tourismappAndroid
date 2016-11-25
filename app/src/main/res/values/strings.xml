@@ -32,11 +32,14 @@
     <string name="name_user">Nicolas</string>
     <string name="surname">Ojeda</string>
     <string name="s_surname">Recabarren</string>
-    <string name="mail_perfil">Nico_ojeda@mail.org</string>
+    <string name="mail_perfil">12343</string>
     <string name="nameuser_perfil">Nicokawai666</string>
     <string name="password_perfil">*****</string>
     <string name="btnPass">Cambiar Password</string>
     <string name="btnGuardar">Guardar</string>
+
+    <!-- String to ActivityPerfil.java-->
+
 
     <!-- Strings activity:share_place.xml -->
     <string name="share_places">Comparte lo que quieras!</string>
