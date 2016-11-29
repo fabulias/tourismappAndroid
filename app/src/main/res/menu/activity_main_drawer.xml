@@ -3,32 +3,41 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/Share_preferences"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/prefBus" />
-        <item
-            android:id="@+id/favoritos"
+            android:id="@+id/preferences_main"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/Favoritos" />
+            android:title="@string/preferences" />
+        <!--
         <item
-            android:id="@+id/comments"
+            android:id="@+id/nav_gallery"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="" />
+        <item
+            android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/Mcoment" />
+            android:title="Slideshow" />
         <item
-            android:id="@+id/config_cuenta"
+            android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
-            android:title="@string/ConfCuent" />
-        <item
-            android:id="@+id/support"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/support"/>
+            android:title="Tools" />
 
         <item
-            android:id="@+id/logout"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/Logout"/>
+            android:id="@+id/favorites_main"
+            android:title="@string/favorites" />
+        -->
+        <item
+            android:icon="@drawable/ic_menu_send"
+            android:id="@+id/comentaries_main"
+            android:title="@string/comentaries" />
+        <item
+            android:icon="@drawable/ic_menu_manage"
+            android:id="@+id/settings_main"
+            android:title="@string/settings" />
+        <item
+            android:icon="@drawable/ic_menu_share"
+            android:id="@+id/support_main"
+            android:title="@string/suppport" />
     </group>
-<!--
+    <!--
     <item android:title="Communicate">
         <menu>
             <item
@@ -41,5 +50,5 @@
                 android:title="Send" />
         </menu>
     </item>
--->
+    -->
 </menu>

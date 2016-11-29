@@ -355,7 +355,7 @@ public class ActivityPerfil extends AppCompatActivity {
                 System.out.println("EDITADO PERFIL");
                 finish();
                 Toast.makeText(ActivityPerfil.this, "Perfil Actualizado", Toast.LENGTH_SHORT).show();
-                Intent myIntent = new Intent(ActivityPerfil.this, ActivityPerfil.class);
+                Intent myIntent = new Intent(ActivityPerfil.this, MainActivity.class);
                /* EditText editText = (EditText) findViewById(R.id.email);
                 String message = editText.getText().toString();
                 myIntent.putExtra(EXTRA_MESSAGE, message); */

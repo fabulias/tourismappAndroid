@@ -396,6 +396,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected void SetDataUser(JSONObject userData) throws JSONException {
             SharedPreferences preferences=getSharedPreferences("DataUser",Context.MODE_PRIVATE);
             SharedPreferences.Editor editor=preferences.edit();
+            editor.putString("mail", userData.getString("mail"));
             editor.putString("pass", userData.getString("pass"));
             editor.putString("name", userData.getString("name"));
             editor.putString("surname", userData.getString("surname"));
@@ -410,11 +411,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             //Existe la persona
             if (success.length() > 0 ) {
                 finish();
-<<<<<<< HEAD
-                Intent myIntent = new Intent(LoginActivity.this, LoginActivity.class);
-=======
-                Intent myIntent = new Intent(LoginActivity.this, ActivityPerfil.class);
->>>>>>> develop
+                Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+
                 EditText editText = (EditText) findViewById(R.id.email);
                 String message = editText.getText().toString();
                 myIntent.putExtra("usermail", message);

@@ -51,14 +51,6 @@
     <string name="shareplace">Compatir!</string>
     <string name="title_activity_maps">Map</string>
 
-    <!-- String activity_main_drawer-->
-    <string name="prefBus">Preferencias de Búsqueda</string>
-    <string name="Favoritos">Favoritos</string>
-    <string name="Mcoment">Mis comentarios</string>
-    <string name="ConfCuent">Configuración de Cuenta</string>
-    <string name="support">Suppot</string>
-    <string name="Logout">Cerrar Sesión</string>
-
     <!-- String nav_header_main.xml -->
     <string name="NameTour">TourismAPP</string>
     <string name="mailsupport">Tourismapp@tour.com</string>
@@ -83,4 +75,13 @@
     <string name="reg_phone">Telefono</string>
     <string name="reg_pass">Contraseña</string>
     <string name="reg_save">Registrarme</string>
+
+    <!-- Main Activity -->
+    <string name="preferences">Preferencias de búsqueda</string>
+    <!--<string name="history"></string>-->
+    <string name="favorites">Favoritos</string>
+    <string name="comentaries">Mis comentarios</string>
+    <string name="settings">Configuración de cuenta</string>
+    <string name="suppport">Soporte</string>
+    <string name="out_session">Cerrar sesión</string>
 </resources>
