@@ -147,7 +147,8 @@ public class ActivityAddPlace extends AppCompatActivity {
             showProgress(true);
             mAuthTask = new PlaceRegisterTask(name, phone, description, hourOpenWeek, hourCloseWeek, hourOpenWeeknd, hourCloseWeeknd);
             String url = "http://ttourismapp.herokuapp.com/api/v1/places";
-            mAuthTask.execute(url);
+            String url_sc = "https://ttourismapp.herokuapp.com/api/v1/schedule";
+            mAuthTask.execute(url, url_sc);
         }
     }
 
@@ -253,7 +254,7 @@ public class ActivityAddPlace extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             StringBuilder result = new StringBuilder();
-            //StringBuilder resultado = new StringBuilder();
+            StringBuilder resultado = new StringBuilder();
             try {
                 URL url = new URL(params[0]);
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -263,7 +264,7 @@ public class ActivityAddPlace extends AppCompatActivity {
                 urlConnection.setRequestProperty("Content-Type", "application/json");
 
                 JSONObject jsonPlace;
-                //JSONObject jsonSchedule;
+                JSONObject jsonSchedule;
 
                 jsonPlace = setJsonPlace(mNamePlace, mPhone, mDescription);
                 System.out.println("INICIO");
@@ -301,8 +302,12 @@ public class ActivityAddPlace extends AppCompatActivity {
                 System.out.println(jsonObj);
                 JSONObject id_ = jsonObj.getJSONObject("data");
                 System.out.println("--->" + id_);
-                /*
-                URL api = new URL("https://ttourismapp.herokuapp.com/api/v1/schedule");
+                String id_place = id_.getString("id_place");
+
+
+                // NEW REQUEST
+                URL api = new URL(params[1]);
+                System.out.println("params[1] -> " + params[1]);
                 System.out.println("HOLA SCHEDULE");
                 urlConnect = (HttpURLConnection) api.openConnection();
 
@@ -311,41 +316,60 @@ public class ActivityAddPlace extends AppCompatActivity {
 
 
                 jsonSchedule = setJsonSchedule(mhourOpenWeek, mhourCloseWeek, mhourOpenWeeknd, mhourCloseWeeknd, id_place);
+                System.out.println("AQUI VA");
+                System.out.println(jsonSchedule);
+                System.out.println("FIN");
                 DataOutputStream esc = new DataOutputStream(urlConnect.getOutputStream());
                 esc.writeBytes(jsonSchedule.toString());
                 esc.flush();
                 esc.close();
+                System.out.println("NADAAAA +++");
+                InputStream en = null;
+                try {
+                    en = urlConnection.getInputStream();
+                } catch(FileNotFoundException e) {
+                    en = urlConnection.getErrorStream();
+                }
 
-                InputStream en = new BufferedInputStream(urlConnect.getInputStream());
-                BufferedReader lectura = new BufferedReader(new InputStreamReader(en));
+                BufferedReader read = new BufferedReader(new InputStreamReader(en));
                 String linea;
-                while ((linea = lectura.readLine()) != null) {
+                while ((linea = read.readLine()) != null) {
                     resultado.append(linea);
-                }*/
+                }
+
+                JSONObject result_sc = null;
+                try {
+                    result_sc = new JSONObject(resultado.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return "";
+                }
+                System.out.println(result_sc);
             } catch (Exception e) {
                 System.out.println("aqui entre a addplace");
                 e.printStackTrace();
                 return "";
             } finally {
                 urlConnection.disconnect();
-                /*
+
                 if (urlConnect != null) {
                     urlConnect.disconnect();
                 }
-                */
 
             }
             JSONObject jsonObjPlace = null;
-            //JSONObject jsonObjSchedule = null;
+            JSONObject jsonObjSchedule = null;
+            System.out.println("AQUI VOY 1");
             try {
+                System.out.println("AQUI VOY 2");
                 jsonObjPlace = new JSONObject(result.toString());
-                //jsonObjSchedule = new JSONObject(resultado.toString());
+                jsonObjSchedule = new JSONObject(resultado.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
                 return "";
             }
             try {
-                if (/*jsonObjSchedule.getString("status").equals("success") && */jsonObjPlace.getString("status").equals("success")) {
+                if (jsonObjSchedule.getString("status").equals("success") && jsonObjPlace.getString("status").equals("success")) {
                     System.out.println("Success from API Good :) !!!");
                     return "";
                 } else {
