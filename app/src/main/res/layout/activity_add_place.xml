@@ -10,4 +10,190 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.fabulias.tourismapp.ActivityAddPlace">
 
+    <ProgressBar
+        android:id="@+id/addPlace_progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="230dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/share_places"
+        android:textColor="#ce3232"
+        android:textSize="25sp"
+        android:typeface="serif"
+        android:id="@+id/share_places"
+
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+
+
+             <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/colorPrimaryDark"
+                android:hint="@string/name_shareplace"
+                android:inputType="textPersonName"
+                android:id="@+id/namePlace"
+                 android:layout_below="@+id/share_places"/>
+              <EditText
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:backgroundTint="@color/colorPrimaryDark"
+                 android:hint="@string/description_place"
+                 android:inputType="textPersonName"
+                 android:id="@+id/description"
+                 android:layout_below="@+id/namePlace"/>
+             <EditText
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:backgroundTint="@color/colorPrimaryDark"
+                 android:hint="@string/phone"
+                 android:inputType="phone"
+                 android:id="@+id/phone_place"
+                 android:layout_below="@+id/description"/>
+              <LinearLayout
+                 android:orientation="vertical"
+                 android:layout_width="match_parent"
+                 android:layout_height="1sp"
+                 android:background="@color/black"
+                 android:id="@+id/linea1"
+                 android:layout_marginStart="10dp"
+                 android:layout_marginTop="19dp"
+                  android:layout_below="@+id/phone_place"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="130dp"
+        android:text="@string/Schedule_place"
+        android:textSize="10pt"
+        android:id="@+id/schedule_place"
+        android:layout_below="@+id/linea1"
+        android:layout_alignParentEnd="true" />
+
+    <ScrollView
+        android:id="@+id/addPlace_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/schedule_place"
+        android:layout_toEndOf="@+id/addPlace_progress"
+        android:layout_marginTop="32dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:weightSum="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="111dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/semana"
+                android:text="@string/WeekSC"/>
+            <TextView
+                android:id="@+id/horaOpenS"
+                android:layout_height="wrap_content"
+                android:layout_width="130dp"
+                android:layout_gravity="center"
+                />
+
+            <Button
+                android:id="@+id/btnOpenS"
+                android:layout_gravity="center"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:onClick="onButtonClickedOpenS"
+                android:text="@string/open"/>
+
+
+
+
+            <TextView
+        android:id="@+id/horaCloseS"
+        android:layout_height="wrap_content"
+        android:layout_width="130dp"
+        android:layout_gravity="center"
+/>
+
+            <Button
+                android:id="@+id/btnCloseS"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:onClick="onButtonClickedCloseS"
+                android:text="@string/close"
+                android:layout_gravity="center"
+         />
+
+
+            <TextView
+        android:text="@string/Weekend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/weekend"
+
+ />
+
+            <TextView
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:id="@+id/horaOpenF"
+                />
+    <Button
+        android:text="Apertura"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnOpenF"
+        android:layout_gravity="center"
+        android:onClick="onButtonClickedOpenF"
+/>
+            <TextView
+
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+
+                android:id="@+id/horaCloseF"
+                />
+
+    <Button
+        android:text="Cierre"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnCloseF"
+        android:layout_gravity="center"
+        android:onClick="onButtonClickedCloseF"
+ />
+
+
+
+    <TextView
+
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/horaCloseF"
+ />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/colorPrimaryDark"
+                android:text="@string/reg_save"
+                android:id="@+id/reg_button"
+                android:textColor="#fff"
+
+                />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
 </RelativeLayout>

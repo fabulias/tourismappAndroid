@@ -25,6 +25,7 @@
     <!-- String to AndroidManifiest.xml-->
     <string name="compartir">Compartir</string>
     <string name="perfil">Perfil de Usuario</string>
+    <string name="addPlace">Compartir lugares</string>
 
 
     <!-- Strings to activity_perfil.xml-->
@@ -41,16 +42,6 @@
     <!-- String to ActivityPerfil.java-->
 
 
-    <!-- Strings activity:share_place.xml -->
-    <string name="share_places">Comparte lo que quieras!</string>
-    <string name="name_shareplace">Nombre :</string>
-    <string name="nameplace">La picada de toesca</string>
-    <string name="location">Toesca #1234</string>
-    <string name="schedule_word">Horario:</string>
-    <string name="SelectTagWord">Seleccione Tags</string>
-    <string name="shareplace">Compatir!</string>
-    <string name="title_activity_maps">Map</string>
-
     <!-- String activity_main_drawer-->
     <string name="prefBus">Preferencias de Búsqueda</string>
     <string name="Favoritos">Favoritos</string>
@@ -59,19 +50,23 @@
     <string name="support">Suppot</string>
     <string name="Logout">Cerrar Sesión</string>
 
-    <!-- String nav_header_main.xml -->
-    <string name="NameTour">TourismAPP</string>
-    <string name="mailsupport">Tourismapp@tour.com</string>
+
+    <!-- String to activity_add_place.xml -->
+
+    <string name="name_shareplace">Nombre</string>
+    <string name="share_places">Comparte lo que quieras!</string>
+    <string name="shareplace">Compatir</string>
+    <string name="description_place">Descripción</string>
+    <string name="Schedule_place">Horario</string>
+    <string name="Week">Lunes a Viernes:</string>
+    <string name="Weekend">Fin de semana y Festivos:</string>
+    <string name="WeekSC">Lunes a Viernes</string>
+    <string name="open">Apertura</string>
+    <string name="close">Cierre</string>
+    <string name="WeekndSC">Fin de semana y Festivos</string>
+    <string name="phone">Telefóno(Opcional)</string>
 
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_main">MainActivity</string>
-
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="action_settings">Settings</string>
 
     <!-- Register activity -->
     <string name="register">Registro</string>
@@ -83,4 +78,8 @@
     <string name="reg_phone">Telefono</string>
     <string name="reg_pass">Contraseña</string>
     <string name="reg_save">Registrarme</string>
+    <string name="Openhour">00</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
