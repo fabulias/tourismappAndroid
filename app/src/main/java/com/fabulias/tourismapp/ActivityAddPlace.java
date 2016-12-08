@@ -32,10 +32,12 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -251,26 +253,37 @@ public class ActivityAddPlace extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             StringBuilder result = new StringBuilder();
-            StringBuilder resultado = new StringBuilder();
+            //StringBuilder resultado = new StringBuilder();
             try {
                 URL url = new URL(params[0]);
                 urlConnection = (HttpURLConnection) url.openConnection();
+
                 urlConnection.setDoOutput(true);
-                urlConnection.setDoInput(true);
                 urlConnection.setRequestMethod("POST");
                 urlConnection.setRequestProperty("Content-Type", "application/json");
 
                 JSONObject jsonPlace;
-                JSONObject jsonSchedule;
+                //JSONObject jsonSchedule;
 
                 jsonPlace = setJsonPlace(mNamePlace, mPhone, mDescription);
-
+                System.out.println("INICIO");
+                System.out.println(jsonPlace);
+                System.out.println("FIN");//System.out.println(jsonPlace.toString());
                 DataOutputStream wr = new DataOutputStream(urlConnection.getOutputStream());
                 wr.writeBytes(jsonPlace.toString());
                 wr.flush();
                 wr.close();
 
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+
+
+
+                InputStream in = null;
+                try {
+                    in = urlConnection.getInputStream();
+                } catch(FileNotFoundException e) {
+                    in = urlConnection.getErrorStream();
+                }
+
                 BufferedReader reader = new BufferedReader(new InputStreamReader(in));
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -285,7 +298,10 @@ public class ActivityAddPlace extends AppCompatActivity {
                     e.printStackTrace();
                     return "";
                 }
-                String id_place = jsonObj.getString("id");
+                System.out.println(jsonObj);
+                JSONObject id_ = jsonObj.getJSONObject("data");
+                System.out.println("--->" + id_);
+                /*
                 URL api = new URL("https://ttourismapp.herokuapp.com/api/v1/schedule");
                 System.out.println("HOLA SCHEDULE");
                 urlConnect = (HttpURLConnection) api.openConnection();
@@ -305,26 +321,31 @@ public class ActivityAddPlace extends AppCompatActivity {
                 String linea;
                 while ((linea = lectura.readLine()) != null) {
                     resultado.append(linea);
-                }
+                }*/
             } catch (Exception e) {
+                System.out.println("aqui entre a addplace");
                 e.printStackTrace();
                 return "";
             } finally {
-                if (urlConnect != null)
+                urlConnection.disconnect();
+                /*
+                if (urlConnect != null) {
                     urlConnect.disconnect();
+                }
+                */
 
             }
-            JSONObject jsonObjSchedule = null;
             JSONObject jsonObjPlace = null;
+            //JSONObject jsonObjSchedule = null;
             try {
                 jsonObjPlace = new JSONObject(result.toString());
-                jsonObjSchedule = new JSONObject(resultado.toString());
+                //jsonObjSchedule = new JSONObject(resultado.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
                 return "";
             }
             try {
-                if (jsonObjSchedule.getString("status").equals("success") && jsonObjPlace.getString("status").equals("success")) {
+                if (/*jsonObjSchedule.getString("status").equals("success") && */jsonObjPlace.getString("status").equals("success")) {
                     System.out.println("Success from API Good :) !!!");
                     return "";
                 } else {
@@ -345,6 +366,8 @@ public class ActivityAddPlace extends AppCompatActivity {
 
             SharedPreferences preferences = getSharedPreferences("DataUser", Context.MODE_PRIVATE);
             nameUser = preferences.getString("mail", null);
+            nameUser = "farid@mail.com";
+            System.out.println("Aqui la obtiene " + nameUser);
             Date date = new Date();
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
             System.out.println("Fecha: " + dateFormat.format(date));
@@ -361,7 +384,6 @@ public class ActivityAddPlace extends AppCompatActivity {
                 e.printStackTrace();
                 return null;
             }
-
 
         }
 
