@@ -11,7 +11,12 @@ import android.view.Gravity;
 import android.widget.TextView;
 import android.app.DialogFragment;
 import android.app.Dialog;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+
 import android.widget.TimePicker;
 
 
@@ -82,8 +87,16 @@ public class TimePickerFragmentCloseF extends DialogFragment implements TimePick
 
 
         //Display the user changed time on TextView
-        tv.setText(String.valueOf(hourOfDay)
-                + ":" + String.valueOf(minute));
+        SimpleDateFormat df= new SimpleDateFormat("HH:mm:ss");
+        String aux = hourOfDay+ ":"+minute+":00";
+        Date date;
+        try {
+            date= df.parse(aux);
+            String timer=df.format(date);
+            tv.setText(timer);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
     }
 }

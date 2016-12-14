@@ -31,6 +31,19 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
+    <ScrollView
+        android:id="@+id/addPlace_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/share_places"
+        android:layout_toEndOf="@+id/addPlace_progress"
+        android:layout_marginTop="32dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:weightSum="1"
+            android:orientation="vertical">
 
 
              <EditText
@@ -40,7 +53,7 @@
                 android:hint="@string/name_shareplace"
                 android:inputType="textPersonName"
                 android:id="@+id/namePlace"
-                 android:layout_below="@+id/share_places"/>
+                 android:layout_below="@+id/addPlace_form"/>
               <EditText
                  android:layout_width="match_parent"
                  android:layout_height="wrap_content"
@@ -76,19 +89,6 @@
         android:layout_below="@+id/linea1"
         android:layout_alignParentEnd="true" />
 
-    <ScrollView
-        android:id="@+id/addPlace_form"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/schedule_place"
-        android:layout_toEndOf="@+id/addPlace_progress"
-        android:layout_marginTop="32dp">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            android:weightSum="1"
-            android:orientation="vertical">
 
             <TextView
                 android:layout_width="111dp"
@@ -179,6 +179,15 @@
         android:layout_gravity="center"
         android:id="@+id/horaCloseF"
  />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/black"
+                android:text="@string/tags"
+                android:id="@+id/selectTags"
+                android:onClick="onButtonClickedSelectedTags"
+                />
 
             <Button
                 android:layout_width="match_parent"

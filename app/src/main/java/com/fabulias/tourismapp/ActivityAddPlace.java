@@ -147,7 +147,7 @@ public class ActivityAddPlace extends AppCompatActivity {
             showProgress(true);
             mAuthTask = new PlaceRegisterTask(name, phone, description, hourOpenWeek, hourCloseWeek, hourOpenWeeknd, hourCloseWeeknd);
             String url = "http://ttourismapp.herokuapp.com/api/v1/places";
-            String url_sc = "https://ttourismapp.herokuapp.com/api/v1/schedule";
+            String url_sc = "https://ttourismapp.herokuapp.com/api/v1/schedules";
             mAuthTask.execute(url, url_sc);
         }
     }
@@ -227,6 +227,7 @@ public class ActivityAddPlace extends AppCompatActivity {
         client.disconnect();
     }
 
+
     private class PlaceRegisterTask extends AsyncTask<String, String, String> {
         private final String mNamePlace;
         private final String mPhone;
@@ -254,7 +255,7 @@ public class ActivityAddPlace extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             StringBuilder result = new StringBuilder();
-            StringBuilder resultado = new StringBuilder();
+            StringBuilder resulted = new StringBuilder();
             try {
                 URL url = new URL(params[0]);
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -301,14 +302,13 @@ public class ActivityAddPlace extends AppCompatActivity {
                 }
                 System.out.println(jsonObj);
                 JSONObject id_ = jsonObj.getJSONObject("data");
-                System.out.println("--->" + id_);
-                String id_place = id_.getString("id_place");
+
+                int id_place = id_.getInt("id_place");
 
 
                 // NEW REQUEST
                 URL api = new URL(params[1]);
-                System.out.println("params[1] -> " + params[1]);
-                System.out.println("HOLA SCHEDULE");
+
                 urlConnect = (HttpURLConnection) api.openConnection();
 
                 urlConnect.setRequestMethod("POST");
@@ -326,20 +326,23 @@ public class ActivityAddPlace extends AppCompatActivity {
                 System.out.println("NADAAAA +++");
                 InputStream en = null;
                 try {
-                    en = urlConnection.getInputStream();
+                    en = urlConnect.getInputStream();
                 } catch(FileNotFoundException e) {
-                    en = urlConnection.getErrorStream();
+                    en = urlConnect.getErrorStream();
                 }
 
                 BufferedReader read = new BufferedReader(new InputStreamReader(en));
                 String linea;
                 while ((linea = read.readLine()) != null) {
-                    resultado.append(linea);
+                    resulted.append(linea);
                 }
 
-                JSONObject result_sc = null;
+                JSONObject result_sc=null;
+                System.out.println("HOLAAAAA");
+                System.out.println(resulted.toString());
+                System.out.println("CHAOOOO");
                 try {
-                    result_sc = new JSONObject(resultado.toString());
+                    result_sc= new JSONObject(resulted.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                     return "";
@@ -363,7 +366,7 @@ public class ActivityAddPlace extends AppCompatActivity {
             try {
                 System.out.println("AQUI VOY 2");
                 jsonObjPlace = new JSONObject(result.toString());
-                jsonObjSchedule = new JSONObject(resultado.toString());
+                jsonObjSchedule = new JSONObject(resulted.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
                 return "";
@@ -371,7 +374,7 @@ public class ActivityAddPlace extends AppCompatActivity {
             try {
                 if (jsonObjSchedule.getString("status").equals("success") && jsonObjPlace.getString("status").equals("success")) {
                     System.out.println("Success from API Good :) !!!");
-                    return "";
+                    return ".";
                 } else {
                     System.out.println("Error from API Bad :( !!!");
                     return "";
@@ -411,7 +414,7 @@ public class ActivityAddPlace extends AppCompatActivity {
 
         }
 
-        JSONObject setJsonSchedule(String hourOpenWeek, String hourCloseWeek, String hourOpenWeeknd, String hourCloseWeeknd, String id_place) {
+        JSONObject setJsonSchedule(String hourOpenWeek, String hourCloseWeek, String hourOpenWeeknd, String hourCloseWeeknd, int id_place) {
             String hourOpenW = "2016-12-04T" + hourOpenWeek + "Z";
             String hourCloseW = "2016-12-04T" + hourCloseWeek + "Z";
             String hourOpenWnd = "2016-12-04T" + hourOpenWeeknd + "Z";
@@ -419,20 +422,20 @@ public class ActivityAddPlace extends AppCompatActivity {
             JSONObject JsonSchedule = new JSONObject();
             try {
                 JsonSchedule.put("id", id_place);
-                JsonSchedule.put("o1", hourOpenWeek);
-                JsonSchedule.put("c1", hourCloseWeek);
-                JsonSchedule.put("o2", hourOpenWeek);
-                JsonSchedule.put("c2", hourCloseWeek);
-                JsonSchedule.put("o3", hourOpenWeek);
-                JsonSchedule.put("c3", hourCloseWeek);
-                JsonSchedule.put("o4", hourOpenWeek);
-                JsonSchedule.put("c4", hourCloseWeek);
-                JsonSchedule.put("o5", hourOpenWeek);
-                JsonSchedule.put("c5", hourCloseWeek);
-                JsonSchedule.put("o6", hourOpenWeeknd);
-                JsonSchedule.put("c6", hourCloseWeeknd);
-                JsonSchedule.put("o7", hourOpenWeeknd);
-                JsonSchedule.put("c7", hourCloseWeeknd);
+                JsonSchedule.put("o1", hourOpenW);
+                JsonSchedule.put("c1", hourCloseW);
+                JsonSchedule.put("o2", hourOpenW);
+                JsonSchedule.put("c2", hourCloseW);
+                JsonSchedule.put("o3", hourOpenW);
+                JsonSchedule.put("c3", hourCloseW);
+                JsonSchedule.put("o4", hourOpenW);
+                JsonSchedule.put("c4", hourCloseW);
+                JsonSchedule.put("o5", hourOpenW);
+                JsonSchedule.put("c5", hourCloseW);
+                JsonSchedule.put("o6", hourOpenWnd);
+                JsonSchedule.put("c6", hourCloseWnd);
+                JsonSchedule.put("o7", hourOpenWnd);
+                JsonSchedule.put("c7", hourCloseWnd);
                 return JsonSchedule;
 
             } catch (Exception e) {
@@ -451,9 +454,7 @@ public class ActivityAddPlace extends AppCompatActivity {
                 Toast.makeText(ActivityAddPlace.this, "Has compartido este lugar!", Toast.LENGTH_SHORT).show();
                 //Cambiar ActivityPerfil por Menu principal!!!!!
                 Intent myIntent = new Intent(ActivityAddPlace.this, ActivityPerfil.class);
-                EditText editText = (EditText) findViewById(R.id.email);
-                String message = editText.getText().toString();
-                myIntent.putExtra(EXTRA_MESSAGE, message);
+
                 startActivity(myIntent);
             } else {
                 System.out.println("Registro nuevamente");
@@ -492,6 +493,9 @@ public class ActivityAddPlace extends AppCompatActivity {
         DialogFragment newFragment = new TimePickerFragmentCloseF();
         newFragment.show(getFragmentManager(), "TimePicker");
     }
-
+   public void onButtonClickedSelectedTags(View v){
+       DialogFragment newFragment = new TagSelectedFragment();
+       newFragment.show(getFragmentManager(),"DialogTag");
+   }
 
 }
