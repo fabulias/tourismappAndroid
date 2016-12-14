@@ -25,6 +25,7 @@
     <!-- String to AndroidManifiest.xml-->
     <string name="compartir">Compartir</string>
     <string name="perfil">Perfil de Usuario</string>
+    <string name="addPlace">Compartir lugares</string>
 
 
     <!-- Strings to activity_perfil.xml-->
@@ -59,11 +60,30 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_main">TourismApp</string>
+    <!-- String activity_main_drawer-->
+    <string name="prefBus">Preferencias de Búsqueda</string>
+    <string name="Favoritos">Favoritos</string>
+    <string name="Mcoment">Mis comentarios</string>
+    <string name="ConfCuent">Configuración de Cuenta</string>
+    <string name="support">Suppot</string>
+    <string name="Logout">Cerrar Sesión</string>
+
+
+    <!-- String to activity_add_place.xml -->
+
+    <string name="description_place">Descripción</string>
+    <string name="Schedule_place">Horario</string>
+    <string name="Week">Lunes a Viernes:</string>
+    <string name="Weekend">Fin de semana y Festivos:</string>
+    <string name="WeekSC">Lunes a Viernes</string>
+    <string name="open">Apertura</string>
+    <string name="close">Cierre</string>
+    <string name="WeekndSC">Fin de semana y Festivos</string>
+    <string name="phone">Telefóno(Opcional)</string>
+    <string name="tags">Seleccionar Tags</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="action_settings">Settings</string>
 
     <!-- Register activity -->
     <string name="register">Registro</string>
@@ -84,4 +104,8 @@
     <string name="settings">Configuración de cuenta</string>
     <string name="suppport">Soporte</string>
     <string name="out_session">Cerrar sesión</string>
+
+    <string name="Openhour">00</string>
+    <string name="action_settings">Configuraciones</string>
+
 </resources>

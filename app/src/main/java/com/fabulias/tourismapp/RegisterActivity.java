@@ -264,7 +264,9 @@ public class RegisterActivity extends AppCompatActivity {
                 json.put("pass", mPass);
                 json.put("status", true);
 
-
+                System.out.println("INICIO");
+                System.out.println(json);
+                System.out.println("FIN");
                 DataOutputStream wr = new DataOutputStream(urlConnection.getOutputStream());
                 wr.writeBytes(json.toString());
                 wr.flush();
