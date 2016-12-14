@@ -23,9 +23,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        System.out.println("Aqui estoy en MapsActivity");
         super.onCreate(savedInstanceState);
-        System.out.println("here estamos putos!!!!");
         setContentView(R.layout.activity_maps);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         System.out.println("que pasa en onCreate putos ------");

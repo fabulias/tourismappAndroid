@@ -84,7 +84,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         System.out.println(m + " - >" + p);
         if ((m != null && !m.equals("")) && (p != null && !p.equals(""))) {
-            Intent myIntent = new Intent(LoginActivity.this, MapsActivity.class);
+            Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(myIntent);
         }
 
