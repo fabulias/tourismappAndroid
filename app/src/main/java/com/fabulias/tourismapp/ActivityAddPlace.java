@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.app.DialogFragment;
 import android.widget.Button;
@@ -25,6 +26,7 @@ import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -40,6 +42,7 @@ import java.net.URL;
 import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 public class ActivityAddPlace extends AppCompatActivity {
 
@@ -148,7 +151,8 @@ public class ActivityAddPlace extends AppCompatActivity {
             mAuthTask = new PlaceRegisterTask(name, phone, description, hourOpenWeek, hourCloseWeek, hourOpenWeeknd, hourCloseWeeknd);
             String url = "http://ttourismapp.herokuapp.com/api/v1/places";
             String url_sc = "https://ttourismapp.herokuapp.com/api/v1/schedules";
-            mAuthTask.execute(url, url_sc);
+            String url_tag = "https://ttourismapp.herokuapp.com/api/v1/tags_places";
+            mAuthTask.execute(url, url_sc, url_tag);
         }
     }
 
@@ -237,6 +241,8 @@ public class ActivityAddPlace extends AppCompatActivity {
         private final String mhourOpenWeeknd;
         private final String mhourCloseWeeknd;
 
+        private int cont_tag=0; //Contador de inserts Tags
+
         PlaceRegisterTask(String name, String phone, String description, String hourOpenWeek, String hourCloseWeek,
                           String hourOpenWeeknd, String hourCloseWeeknd) {
             mNamePlace = name;
@@ -251,11 +257,13 @@ public class ActivityAddPlace extends AppCompatActivity {
 
         HttpURLConnection urlConnection;
         HttpURLConnection urlConnect;
+        HttpURLConnection urlTagConnect;
 
         @Override
         protected String doInBackground(String... params) {
             StringBuilder result = new StringBuilder();
             StringBuilder resulted = new StringBuilder();
+            StringBuilder result_tag = new StringBuilder();
             try {
                 URL url = new URL(params[0]);
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -266,6 +274,7 @@ public class ActivityAddPlace extends AppCompatActivity {
 
                 JSONObject jsonPlace;
                 JSONObject jsonSchedule;
+                JSONArray jsonTag;
 
                 jsonPlace = setJsonPlace(mNamePlace, mPhone, mDescription);
                 System.out.println("INICIO");
@@ -300,56 +309,85 @@ public class ActivityAddPlace extends AppCompatActivity {
                     e.printStackTrace();
                     return "";
                 }
-                System.out.println(jsonObj);
-                JSONObject id_ = jsonObj.getJSONObject("data");
 
+                JSONObject id_ = jsonObj.getJSONObject("data");
                 int id_place = id_.getInt("id_place");
 
 
-                // NEW REQUEST
-                URL api = new URL(params[1]);
 
-                urlConnect = (HttpURLConnection) api.openConnection();
-
-                urlConnect.setRequestMethod("POST");
-                urlConnect.setRequestProperty("Content-Type", "application/json");
-
+                // NEW REQUEST FOR SCHEDULE PLACE
 
                 jsonSchedule = setJsonSchedule(mhourOpenWeek, mhourCloseWeek, mhourOpenWeeknd, mhourCloseWeeknd, id_place);
-                System.out.println("AQUI VA");
+                URL api = new URL(params[1]);
+                urlConnect = (HttpURLConnection) api.openConnection();
+                urlConnect.setRequestMethod("POST");
+                urlConnect.setRequestProperty("Content-Type", "application/json");
                 System.out.println(jsonSchedule);
-                System.out.println("FIN");
                 DataOutputStream esc = new DataOutputStream(urlConnect.getOutputStream());
                 esc.writeBytes(jsonSchedule.toString());
                 esc.flush();
                 esc.close();
-                System.out.println("NADAAAA +++");
                 InputStream en = null;
                 try {
                     en = urlConnect.getInputStream();
                 } catch(FileNotFoundException e) {
                     en = urlConnect.getErrorStream();
                 }
-
                 BufferedReader read = new BufferedReader(new InputStreamReader(en));
                 String linea;
                 while ((linea = read.readLine()) != null) {
                     resulted.append(linea);
                 }
 
-                JSONObject result_sc=null;
-                System.out.println("HOLAAAAA");
-                System.out.println(resulted.toString());
-                System.out.println("CHAOOOO");
-                try {
-                    result_sc= new JSONObject(resulted.toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    return "";
+
+                //New request for tags_places
+                jsonTag =setJsonTag(id_place);
+                System.out.println(jsonTag);
+
+
+                for(int i = 0; i<jsonTag.length(); i++) {
+                    URL urlTag= new URL(params[2]);
+                    urlTagConnect = (HttpURLConnection) urlTag.openConnection();
+                    urlTagConnect.setRequestMethod("POST");
+                    urlTagConnect.setRequestProperty("Content-Type","application/json");
+                    JSONObject tagAux = jsonTag.getJSONObject(i);
+                    DataOutputStream esc_tag = new DataOutputStream(urlTagConnect.getOutputStream());
+                    esc_tag.writeBytes(tagAux.toString());
+                    esc_tag.flush();
+                    InputStream en_tag = null;
+                    try {
+                        en_tag = urlTagConnect.getInputStream();
+                    } catch(FileNotFoundException e) {
+                        en_tag = urlTagConnect.getErrorStream();
+                    }
+                    BufferedReader read_tag = new BufferedReader(new InputStreamReader(en_tag));
+                    String line_tag;
+                    while ((line_tag = read_tag.readLine()) != null) {
+                        result_tag.append(line_tag);
+                    }
+                    JSONObject  jsonObjTag;
+                    try {
+                        jsonObjTag=new JSONObject(result_tag.toString());
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                        return "";
+                    }
+                    try{
+                        if (jsonObjTag.getString("status").equals("success")){
+                            cont_tag++;
+                        }
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+                    urlTagConnect=null;
+
                 }
-                System.out.println(result_sc);
+
+
+
+
             } catch (Exception e) {
-                System.out.println("aqui entre a addplace");
                 e.printStackTrace();
                 return "";
             } finally {
@@ -362,17 +400,19 @@ public class ActivityAddPlace extends AppCompatActivity {
             }
             JSONObject jsonObjPlace = null;
             JSONObject jsonObjSchedule = null;
-            System.out.println("AQUI VOY 1");
+
+
+
             try {
-                System.out.println("AQUI VOY 2");
                 jsonObjPlace = new JSONObject(result.toString());
                 jsonObjSchedule = new JSONObject(resulted.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
                 return "";
             }
+
             try {
-                if (jsonObjSchedule.getString("status").equals("success") && jsonObjPlace.getString("status").equals("success")) {
+                if (jsonObjSchedule.getString("status").equals("success") && jsonObjPlace.getString("status").equals("success") && cont_tag>0) {
                     System.out.println("Success from API Good :) !!!");
                     return ".";
                 } else {
@@ -384,7 +424,7 @@ public class ActivityAddPlace extends AppCompatActivity {
                 return "";
             }
 
-            //Continuar con la realización de insertSchedule ya que no esta funcionando arreglar
+
         }
 
         JSONObject setJsonPlace(String name, String phone, String description) {
@@ -445,6 +485,33 @@ public class ActivityAddPlace extends AppCompatActivity {
 
 
         }
+        JSONArray setJsonTag(int idPlace){
+            JSONArray TagJson= new JSONArray();
+
+
+            SharedPreferences tagPref= getSharedPreferences("DataTag",Context.MODE_PRIVATE);
+            //CONTINUAR CREANDO EL JSON, PERO ESTO NO SERVIRÁ YA QUE SE ENVÍA SOLO 1 JSON Y LOS TAGS PUEDEN SER MUCHOS MÁS ARREGLAR ESO 
+            int number_tags = tagPref.getInt("length",0);
+            Map<String,?> keys = tagPref.getAll();
+
+
+            for(Map.Entry<String,?> entry : keys.entrySet()){
+               try {
+                   JSONObject aux = new JSONObject();
+                    aux.put("id_place", idPlace);
+                    aux.put("id_tag", entry.getValue().toString());
+                    TagJson.put(aux);
+                   System.out.println(aux);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            System.out.println(TagJson);
+            return TagJson;
+
+
+        }
 
         @Override
         protected void onPostExecute(final String success) {
@@ -494,7 +561,8 @@ public class ActivityAddPlace extends AppCompatActivity {
         newFragment.show(getFragmentManager(), "TimePicker");
     }
    public void onButtonClickedSelectedTags(View v){
-       DialogFragment newFragment = new TagSelectedFragment();
+       SharedPreferences TagSelected = getSharedPreferences("DataTag", Context.MODE_PRIVATE);
+       DialogFragment newFragment = new SelectTagFragment();
        newFragment.show(getFragmentManager(),"DialogTag");
    }
 

@@ -31,7 +31,7 @@ public class TagSelectedFragment extends DialogFragment {
     private TagSelectedTask mAuthTask = null;
 
     public TagSelectedFragment() {
-        attemptTag();
+
     }
 
 
@@ -45,7 +45,7 @@ public class TagSelectedFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
+        attemptTag();
         return createMultipleListDialog();
     }
 
@@ -64,7 +64,7 @@ public class TagSelectedFragment extends DialogFragment {
 
         final ArrayList<Integer> itemsSeleccionados = new ArrayList<Integer>();
 
-
+        items[0]= "wena cabros";
         for (int i = 0; i<10; i++){
             System.out.println("HOLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
             System.out.println(items[i]);
@@ -95,7 +95,7 @@ public class TagSelectedFragment extends DialogFragment {
         return builder.create();
     }
 
-  protected class TagSelectedTask extends AsyncTask <String,String,String>{
+  protected class TagSelectedTask extends AsyncTask<String,String,String>{
 
 
 
@@ -136,7 +136,7 @@ public class TagSelectedFragment extends DialogFragment {
 
               System.out.println("AQUI ANTES DEL FOR ");
 
-              for (int i=0; i<jsonArray.length();i++){
+              for (int i=1; i<jsonArray.length();i++){
                   System.out.println("VOY BIEN HASTA AHORA");
                   JSONObject json_data=jsonArray.getJSONObject(i);
                   System.out.println("antes de ingresar los datos a items!!!!!!!!!!!!!!!!");
@@ -149,6 +149,7 @@ public class TagSelectedFragment extends DialogFragment {
 
               }
           }catch (JSONException e){
+              System.out.println("HOLIWIS MEN");
                    e.printStackTrace();
           }
           return result.toString();
