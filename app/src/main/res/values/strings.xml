@@ -85,7 +85,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    
+
     <!-- Register activity -->
     <string name="register">Registro</string>
     <string name="reg_name">Nombre</string>
@@ -108,5 +108,6 @@
 
     <string name="Openhour">00</string>
     <string name="action_settings">Configuraciones</string>
+    <string name="exit">Cerrar sesión</string>
 
 </resources>

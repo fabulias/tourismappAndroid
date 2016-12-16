@@ -36,6 +36,11 @@
             android:icon="@drawable/ic_menu_share"
             android:id="@+id/support_main"
             android:title="@string/suppport" />
+
+        <item
+            android:icon="@android:drawable/ic_lock_power_off"
+            android:id="@+id/exit_sesion"
+            android:title="@string/exit" />
     </group>
     <!--
     <item android:title="Communicate">

@@ -1,9 +1,15 @@
 package com.fabulias.tourismapp;
 
 import android.*;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -28,15 +34,32 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity
         implements OnNavigationItemSelectedListener,
-        OnMapReadyCallback{
+        OnMapReadyCallback {
 
-
+    private MarketsTask mAuthTask = null;
     private GoogleMap mMap;
     private static final int LOCATION_REQUEST_CODE = 1;
 
@@ -120,6 +143,13 @@ public class MainActivity extends AppCompatActivity
             startActivity(myIntent);
         } else if (id == R.id.support_main) {
 
+        } else if (id == R.id.exit_sesion) {
+            SharedPreferences sharedPreferences = getSharedPreferences("DataUser", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();
+            editor.commit();
+            Intent myIntent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(myIntent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -136,6 +166,7 @@ public class MainActivity extends AppCompatActivity
                 == PackageManager.PERMISSION_GRANTED) {
             System.out.println("setMyLocation -> true");
             mMap.setMyLocationEnabled(true);
+
         } else {
             System.out.println("aqui no habian permisos creo");
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
@@ -149,12 +180,36 @@ public class MainActivity extends AppCompatActivity
                         LOCATION_REQUEST_CODE);
             }
         }
-
         mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
 
+        LocationManager locationManager = (LocationManager)
+                getSystemService(Context.LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+
+        Location location = locationManager.getLastKnownLocation(locationManager
+                .getBestProvider(criteria, false));
+        double latitude = 0;
+        double longitude = 0;
+        if(location!= null){
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+        }
+        System.out.println(latitude);
+        System.out.println(longitude);
+        System.out.println("good");
         // Marcadores
-        //mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)));
 
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(latitude, longitude), 16.4f));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude+0.1f, longitude)));
+        if (mAuthTask != null) {
+            return;
+        }
+
+        mAuthTask = new MainActivity.MarketsTask(latitude, longitude);
+        String uri = "https://ttourismapp.herokuapp.com/api/v1/geocoordsradio/";
+        mAuthTask.execute(uri);
 
     }
 
@@ -186,6 +241,74 @@ public class MainActivity extends AppCompatActivity
 
         }
     }
+
+    public class MarketsTask extends AsyncTask<String, String, String> {
+        private final double lat;
+        private final double lng;
+        MarketsTask(double latitude, double longitude) {
+            lat = latitude;
+            lng = longitude;
+        }
+
+        HttpURLConnection urlConnection;
+
+        @Override
+        protected String doInBackground(String... params) {
+            StringBuilder result = new StringBuilder();
+
+            try {
+                String uri = params[0]+lat+"/"+lng+"/10";
+                System.out.println(uri);
+                URL url = new URL(uri);
+                urlConnection = (HttpURLConnection) url.openConnection();
+
+                int status = urlConnection.getResponseCode();
+                System.out.println(status);
+                InputStream in = null;
+                try {
+                    in = urlConnection.getInputStream();
+                } catch(FileNotFoundException e) {
+                    in = urlConnection.getErrorStream();
+                }
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    result.append(line);
+                }
+
+            }catch( Exception e) {
+                System.out.println("AQUI VOY YOOOO");
+                e.printStackTrace();
+                return "";
+            }
+            finally {
+                urlConnection.disconnect();
+            }
+            JSONObject jsonObj = null;
+            try {
+                jsonObj = new JSONObject(result.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return "";
+            }
+            try {
+                if (jsonObj.getString("status").equals("success")) {
+                    JSONArray c = jsonObj.getJSONArray("data");
+                    JSONObject jobj = c.getJSONObject(0);
+                    System.out.println("Success from API Good :) !!!");
+
+                } else {
+                    System.out.println("Error from API Bad :( !!!");
+                    return "";
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return "";
+            }
+            return "";
+        }
+    }
+
 
     @Override
     public boolean onSupportNavigateUp() {
