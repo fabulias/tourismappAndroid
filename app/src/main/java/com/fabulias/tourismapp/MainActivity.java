@@ -40,7 +40,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
@@ -54,6 +57,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
         implements OnNavigationItemSelectedListener,
@@ -62,7 +70,7 @@ public class MainActivity extends AppCompatActivity
     private MarketsTask mAuthTask = null;
     private GoogleMap mMap;
     private static final int LOCATION_REQUEST_CODE = 1;
-
+    //private List<Market> list = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("Aqui voy en MainActivity");
@@ -160,11 +168,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        System.out.println("onMapReady Main");
         // Controles UI
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            System.out.println("setMyLocation -> true");
             mMap.setMyLocationEnabled(true);
 
         } else {
@@ -197,19 +203,53 @@ public class MainActivity extends AppCompatActivity
         }
         System.out.println(latitude);
         System.out.println(longitude);
-        System.out.println("good");
         // Marcadores
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                new LatLng(latitude, longitude), 16.4f));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude+0.1f, longitude)));
+                new LatLng(latitude, longitude), 14.5f));
+        //mMap.addMarker(new MarkerOptions().position(new LatLng(latitude+0.1f, longitude)));
         if (mAuthTask != null) {
             return;
         }
 
-        mAuthTask = new MainActivity.MarketsTask(latitude, longitude);
+        SharedPreferences prefs = getSharedPreferences("Search", MODE_PRIVATE);
+        String radius = prefs.getString("radius", "1");
+        Map<String,?> keys = prefs.getAll();
+        if (radius.equals("1")) {
+            Toast toast = Toast.makeText(this, "Se muestran los locales a 1 Km de distancia.", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+            toast.show();
+        }
+
+        mAuthTask = new MainActivity.MarketsTask(latitude, longitude, radius);
         String uri = "https://ttourismapp.herokuapp.com/api/v1/geocoordsradio/";
-        mAuthTask.execute(uri);
+        AsyncTask<String, String, JSONArray> execute = mAuthTask.execute(uri);
+
+        //En este momento cuento con un radio, tags de preferencia
+        //y locales dentro del radio
+        try {
+            JSONArray json = execute.get();
+            if (json != null) {
+                System.out.println("Objeto ->" + json);
+
+                for (int ix = 0; ix < json.length(); ix++) {
+                    JSONObject tmp = json.getJSONObject(ix);
+                    System.out.println("id -> " + tmp.getInt("id"));
+                    System.out.println("lat -> " + tmp.getDouble("lat"));
+                    System.out.println("lng -> " + tmp.getDouble("lng"));
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(tmp.getDouble("lat"), tmp.getDouble("lng"))).title("Marcador"));
+                }
+            }
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        //System.out.println(list.get(0).getLat());
+
 
     }
 
@@ -242,22 +282,28 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public class MarketsTask extends AsyncTask<String, String, String> {
+    public class MarketsTask extends AsyncTask<String, String, JSONArray> {
         private final double lat;
         private final double lng;
-        MarketsTask(double latitude, double longitude) {
+        private final String radius;
+        MarketsTask(double latitude, double longitude, String rad) {
             lat = latitude;
             lng = longitude;
+            radius = rad;
         }
 
         HttpURLConnection urlConnection;
 
         @Override
-        protected String doInBackground(String... params) {
+        protected JSONArray doInBackground(String... params) {
             StringBuilder result = new StringBuilder();
 
             try {
-                String uri = params[0]+lat+"/"+lng+"/10";
+                String uri;
+                if (radius != null)
+                    uri = params[0] + lat + "/" + lng + "/" + radius;
+                else
+                    uri = params[0] + lat + "/" + lng + "/1";
                 System.out.println(uri);
                 URL url = new URL(uri);
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -279,7 +325,7 @@ public class MainActivity extends AppCompatActivity
             }catch( Exception e) {
                 System.out.println("AQUI VOY YOOOO");
                 e.printStackTrace();
-                return "";
+                return null;
             }
             finally {
                 urlConnection.disconnect();
@@ -289,23 +335,33 @@ public class MainActivity extends AppCompatActivity
                 jsonObj = new JSONObject(result.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
-                return "";
+                return null;
             }
             try {
                 if (jsonObj.getString("status").equals("success")) {
                     JSONArray c = jsonObj.getJSONArray("data");
-                    JSONObject jobj = c.getJSONObject(0);
+                    return c;
+                    /*JSONObject jobj = c.getJSONObject(1);
                     System.out.println("Success from API Good :) !!!");
-
+                    System.out.println(jobj.getInt("id"));
+                    System.out.println(jobj.getDouble("lat"));
+                    System.out.println(jobj.getDouble("lng"));
+                    //list.add(new Market(jobj.getInt("id"), jobj.getDouble("lat"), jobj.getDouble("lng")));
+                    System.out.println(jobj.toString());
+                    //return jobj;*/
                 } else {
                     System.out.println("Error from API Bad :( !!!");
-                    return "";
+                    return null;
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                return "";
+                return null;
             }
-            return "";
+        }
+
+        @Override
+        protected void onCancelled() {
+            mAuthTask = null;
         }
     }
 

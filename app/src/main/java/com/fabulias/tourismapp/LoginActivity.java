@@ -1,5 +1,6 @@
 package com.fabulias.tourismapp;
 
+import android.*;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -19,6 +20,8 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -58,10 +61,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private static final int REQUEST_READ_CONTACTS = 0;
     public final static String EXTRA_MESSAGE = "com.fabulias.login.MESSAGE";
-
+    private static int perm = 0;
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
+    private static final int LOCATION_REQUEST_CODE = 1;
     private UserLoginTask mAuthTask = null;
 
     // UI references.
@@ -128,6 +132,24 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private void populateAutoComplete() {
         if (!mayRequestContacts()) {
             return;
+        }
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            System.out.println("Todo OK al parecer");
+            perm = 1;
+        } else {
+            perm = 0;
+            System.out.println("aqui no habian permisos creo");
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                // Mostrar diálogo explicativo
+            } else {
+                // Solicitar permiso
+                ActivityCompat.requestPermissions(
+                        this,
+                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                        LOCATION_REQUEST_CODE);
+            }
         }
 
         getLoaderManager().initLoader(0, null, this);
@@ -415,7 +437,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             //TextView t = (TextView) findViewById(R.id.activity_main);
             //t.setText(success);
             //Existe la persona
-            if (success.length() > 0 ) {
+            if (success.length() > 0 && perm == 1) {
                 finish();
                 Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
 

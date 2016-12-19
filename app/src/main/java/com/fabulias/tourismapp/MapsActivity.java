@@ -38,23 +38,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap = googleMap;
         System.out.println("aqui entro a onMapReady");
         // Controles UI
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            System.out.println("Todo OK al parecer");
-            mMap.setMyLocationEnabled(true);
-        } else {
-            System.out.println("aqui no habian permisos creo");
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-                // Mostrar diálogo explicativo
-            } else {
-                // Solicitar permiso
-                ActivityCompat.requestPermissions(
-                        this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        LOCATION_REQUEST_CODE);
-            }
-        }
+
 
         mMap.getUiSettings().setZoomControlsEnabled(true);
 

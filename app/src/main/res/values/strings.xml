@@ -109,5 +109,6 @@
     <string name="Openhour">00</string>
     <string name="action_settings">Configuraciones</string>
     <string name="exit">Cerrar sesión</string>
+    <string name="circle_color">#0D47A1</string>
 
 </resources>
