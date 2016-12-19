@@ -111,4 +111,22 @@
     <string name="exit">Cerrar sesión</string>
     <string name="circle_color">#0D47A1</string>
 
+
+    <!-- Fragment Evaluation -->
+    <string name="scoreWord">Score</string>
+    <string name="scoreWordUser">Score Usuario</string>
+    <string name="ComentarioWordUser">Ingresa tú comentario</string>
+    <string name="EvaluarWord">Evaluar</string>
+    <string name="ComentariosWordUsers">Otros comentarios</string>
+
+
+    <!-- Fragment Share Place -->
+    <string name="sharePreferences">Ajustes de búsqueda</string>
+    <string name="ratioSelect">Elegir Distancia</string>
+    <string name="ratioWord">Radio</string>
+    <string name="share">Buscar</string>
+
+    <string name="aux1">HOLA</string>
+    <string name="aux2">Chao</string>
+
 </resources>

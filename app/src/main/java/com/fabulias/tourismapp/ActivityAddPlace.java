@@ -3,16 +3,25 @@ package com.fabulias.tourismapp;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.app.DialogFragment;
 import android.widget.Button;
@@ -23,8 +32,14 @@ import android.widget.Toast;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.identity.intents.Address;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.vision.barcode.Barcode;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,6 +48,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -40,8 +56,13 @@ import java.net.URL;
 import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
-public class ActivityAddPlace extends AppCompatActivity {
+public class ActivityAddPlace extends AppCompatActivity implements
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
 
     public final static String EXTRA_MESSAGE = "com.fabulias.register.MESSAGE";
     private PlaceRegisterTask mAuthTask = null;
@@ -56,14 +77,23 @@ public class ActivityAddPlace extends AppCompatActivity {
 
     private View mProgressView;
     private View mRegisterView;
+
+    private TextView mGeo;
+    private double Latitud;
+    private double Longitud;
+
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
+    private Bundle aux;
+    private JSONObject geoCoord;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        aux = savedInstanceState;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_place);
 
@@ -86,10 +116,83 @@ public class ActivityAddPlace extends AppCompatActivity {
         mRegisterView = findViewById(R.id.addPlace_form);
         mProgressView = findViewById(R.id.addPlace_progress);
 
+        mGeo = (TextView) findViewById(R.id.geo);
+
+        /*
+        LocationManager mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        GeoLocal Local = new GeoLocal();
+        Local.setActivityAddPlace(this);
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+
+        mlocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, (android.location.LocationListener) Local);
+*/
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+         client = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+
+    }
+
+
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        client.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        client.disconnect();
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundel) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(client);
+        if (mLastLocation != null){
+            Latitud=mLastLocation.getLatitude();
+            Longitud=mLastLocation.getLongitude();
+
+        }
+
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 
     private void save() {
@@ -148,7 +251,9 @@ public class ActivityAddPlace extends AppCompatActivity {
             mAuthTask = new PlaceRegisterTask(name, phone, description, hourOpenWeek, hourCloseWeek, hourOpenWeeknd, hourCloseWeeknd);
             String url = "http://ttourismapp.herokuapp.com/api/v1/places";
             String url_sc = "https://ttourismapp.herokuapp.com/api/v1/schedules";
-            mAuthTask.execute(url, url_sc);
+            String url_tag = "https://ttourismapp.herokuapp.com/api/v1/tags_places";
+            String url_geo = "https://ttourismapp.herokuapp.com/api/v1/geocoords";
+            mAuthTask.execute(url, url_sc, url_tag, url_geo);
         }
     }
 
@@ -207,25 +312,6 @@ public class ActivityAddPlace extends AppCompatActivity {
                 .build();
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        AppIndex.AppIndexApi.start(client, getIndexApiAction());
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        AppIndex.AppIndexApi.end(client, getIndexApiAction());
-        client.disconnect();
-    }
 
 
     private class PlaceRegisterTask extends AsyncTask<String, String, String> {
@@ -236,6 +322,8 @@ public class ActivityAddPlace extends AppCompatActivity {
         private final String mhourCloseWeek;
         private final String mhourOpenWeeknd;
         private final String mhourCloseWeeknd;
+
+        private int cont_tag=0; //Contador de inserts Tags
 
         PlaceRegisterTask(String name, String phone, String description, String hourOpenWeek, String hourCloseWeek,
                           String hourOpenWeeknd, String hourCloseWeeknd) {
@@ -251,11 +339,15 @@ public class ActivityAddPlace extends AppCompatActivity {
 
         HttpURLConnection urlConnection;
         HttpURLConnection urlConnect;
+        HttpURLConnection urlTagConnect;
+        HttpURLConnection urlGeoConnect;
 
         @Override
         protected String doInBackground(String... params) {
             StringBuilder result = new StringBuilder();
             StringBuilder resulted = new StringBuilder();
+            StringBuilder result_tag = new StringBuilder();
+            StringBuilder resulted_geo= new StringBuilder();
             try {
                 URL url = new URL(params[0]);
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -266,6 +358,8 @@ public class ActivityAddPlace extends AppCompatActivity {
 
                 JSONObject jsonPlace;
                 JSONObject jsonSchedule;
+                JSONArray jsonTag;
+                JSONObject jsonGeoCoord;
 
                 jsonPlace = setJsonPlace(mNamePlace, mPhone, mDescription);
                 System.out.println("INICIO");
@@ -300,56 +394,109 @@ public class ActivityAddPlace extends AppCompatActivity {
                     e.printStackTrace();
                     return "";
                 }
-                System.out.println(jsonObj);
-                JSONObject id_ = jsonObj.getJSONObject("data");
 
+                JSONObject id_ = jsonObj.getJSONObject("data");
                 int id_place = id_.getInt("id_place");
 
 
-                // NEW REQUEST
-                URL api = new URL(params[1]);
 
-                urlConnect = (HttpURLConnection) api.openConnection();
-
-                urlConnect.setRequestMethod("POST");
-                urlConnect.setRequestProperty("Content-Type", "application/json");
-
+                // NEW REQUEST FOR SCHEDULE PLACE
 
                 jsonSchedule = setJsonSchedule(mhourOpenWeek, mhourCloseWeek, mhourOpenWeeknd, mhourCloseWeeknd, id_place);
-                System.out.println("AQUI VA");
+                URL api = new URL(params[1]);
+                urlConnect = (HttpURLConnection) api.openConnection();
+                urlConnect.setRequestMethod("POST");
+                urlConnect.setRequestProperty("Content-Type", "application/json");
                 System.out.println(jsonSchedule);
-                System.out.println("FIN");
                 DataOutputStream esc = new DataOutputStream(urlConnect.getOutputStream());
                 esc.writeBytes(jsonSchedule.toString());
                 esc.flush();
                 esc.close();
-                System.out.println("NADAAAA +++");
                 InputStream en = null;
                 try {
                     en = urlConnect.getInputStream();
                 } catch(FileNotFoundException e) {
                     en = urlConnect.getErrorStream();
                 }
-
                 BufferedReader read = new BufferedReader(new InputStreamReader(en));
                 String linea;
                 while ((linea = read.readLine()) != null) {
                     resulted.append(linea);
                 }
 
-                JSONObject result_sc=null;
-                System.out.println("HOLAAAAA");
-                System.out.println(resulted.toString());
-                System.out.println("CHAOOOO");
-                try {
-                    result_sc= new JSONObject(resulted.toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    return "";
+
+                //New request for tags_places
+                jsonTag =setJsonTag(id_place);
+                System.out.println(jsonTag);
+
+
+                for(int i = 0; i<jsonTag.length(); i++) {
+                    URL urlTag= new URL(params[2]);
+                    urlTagConnect = (HttpURLConnection) urlTag.openConnection();
+                    urlTagConnect.setRequestMethod("POST");
+                    urlTagConnect.setRequestProperty("Content-Type","application/json");
+                    JSONObject tagAux = jsonTag.getJSONObject(i);
+                    DataOutputStream esc_tag = new DataOutputStream(urlTagConnect.getOutputStream());
+                    esc_tag.writeBytes(tagAux.toString());
+                    esc_tag.flush();
+                    InputStream en_tag = null;
+                    try {
+                        en_tag = urlTagConnect.getInputStream();
+                    } catch(FileNotFoundException e) {
+                        en_tag = urlTagConnect.getErrorStream();
+                    }
+                    BufferedReader read_tag = new BufferedReader(new InputStreamReader(en_tag));
+                    String line_tag;
+                    while ((line_tag = read_tag.readLine()) != null) {
+                        result_tag.append(line_tag);
+                    }
+                    JSONObject  jsonObjTag;
+                    try {
+                        jsonObjTag=new JSONObject(result_tag.toString());
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                        return "";
+                    }
+                    try{
+                        if (jsonObjTag.getString("status").equals("success")){
+                            cont_tag++;
+                        }
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+                    urlTagConnect=null;
                 }
-                System.out.println(result_sc);
+
+
+                //New Request to GeoCoords
+                jsonGeoCoord=setJsonGeocoord(id_place);
+                System.out.println(jsonGeoCoord);
+                URL urlGeocoord= new URL(params[3]);
+                urlGeoConnect =(HttpURLConnection) urlGeocoord.openConnection();
+                urlGeoConnect.setRequestMethod("POST");
+                urlGeoConnect.setRequestProperty("Content-Type","application/json");
+                DataOutputStream esc_geo = new DataOutputStream(urlGeoConnect.getOutputStream());
+                esc_geo.writeBytes(jsonGeoCoord.toString());
+                esc_geo.flush();
+                esc_geo.close();
+                InputStream en_geo = null;
+                try {
+                    en_geo = urlGeoConnect.getInputStream();
+                } catch(FileNotFoundException e) {
+                    en_geo = urlGeoConnect.getErrorStream();
+                }
+                BufferedReader read_geo = new BufferedReader(new InputStreamReader(en_geo));
+                String linea_geo;
+                while ((linea_geo = read_geo.readLine()) != null) {
+                    resulted_geo.append(linea_geo);
+                }
+
+
+
+
+
             } catch (Exception e) {
-                System.out.println("aqui entre a addplace");
                 e.printStackTrace();
                 return "";
             } finally {
@@ -360,19 +507,28 @@ public class ActivityAddPlace extends AppCompatActivity {
                 }
 
             }
+
+
+
+
+
             JSONObject jsonObjPlace = null;
             JSONObject jsonObjSchedule = null;
-            System.out.println("AQUI VOY 1");
+            JSONObject jsonObjGeoCoord = null ;
+
+
+
             try {
-                System.out.println("AQUI VOY 2");
                 jsonObjPlace = new JSONObject(result.toString());
                 jsonObjSchedule = new JSONObject(resulted.toString());
+                jsonObjGeoCoord = new JSONObject(resulted_geo.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
                 return "";
             }
+
             try {
-                if (jsonObjSchedule.getString("status").equals("success") && jsonObjPlace.getString("status").equals("success")) {
+                if (jsonObjSchedule.getString("status").equals("success") && jsonObjPlace.getString("status").equals("success") && jsonObjGeoCoord.getString("status").equals("success")&& cont_tag>0) {
                     System.out.println("Success from API Good :) !!!");
                     return ".";
                 } else {
@@ -384,7 +540,7 @@ public class ActivityAddPlace extends AppCompatActivity {
                 return "";
             }
 
-            //Continuar con la realización de insertSchedule ya que no esta funcionando arreglar
+
         }
 
         JSONObject setJsonPlace(String name, String phone, String description) {
@@ -393,7 +549,6 @@ public class ActivityAddPlace extends AppCompatActivity {
 
             SharedPreferences preferences = getSharedPreferences("DataUser", Context.MODE_PRIVATE);
             nameUser = preferences.getString("mail", null);
-            nameUser = "farid@mail.com";
             System.out.println("Aqui la obtiene " + nameUser);
             Date date = new Date();
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -446,6 +601,51 @@ public class ActivityAddPlace extends AppCompatActivity {
 
         }
 
+
+        JSONArray setJsonTag(int idPlace){
+            JSONArray TagJson= new JSONArray();
+
+
+            SharedPreferences tagPref= getSharedPreferences("DataTag",Context.MODE_PRIVATE);
+            //CONTINUAR CREANDO EL JSON, PERO ESTO NO SERVIRÁ YA QUE SE ENVÍA SOLO 1 JSON Y LOS TAGS PUEDEN SER MUCHOS MÁS ARREGLAR ESO 
+            int number_tags = tagPref.getInt("length",0);
+            Map<String,?> keys = tagPref.getAll();
+
+
+            for(Map.Entry<String,?> entry : keys.entrySet()){
+               try {
+                   JSONObject aux = new JSONObject();
+                    aux.put("id_place", idPlace);
+                    aux.put("id_tag", entry.getValue().toString());
+                    TagJson.put(aux);
+                   System.out.println(aux);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            System.out.println(TagJson);
+            return TagJson;
+
+
+        }
+
+
+        JSONObject setJsonGeocoord(int idPlace){
+            JSONObject geoCoord= new JSONObject();
+
+            try{
+                geoCoord.put("id", idPlace);
+                geoCoord.put("lat", Latitud);
+                geoCoord.put("lng", Longitud);
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return geoCoord;
+
+        }
+
         @Override
         protected void onPostExecute(final String success) {
             if (success.length() > 0) {
@@ -494,7 +694,8 @@ public class ActivityAddPlace extends AppCompatActivity {
         newFragment.show(getFragmentManager(), "TimePicker");
     }
    public void onButtonClickedSelectedTags(View v){
-       DialogFragment newFragment = new TagSelectedFragment();
+       SharedPreferences TagSelected = getSharedPreferences("DataTag", Context.MODE_PRIVATE);
+       DialogFragment newFragment = new SelectTagFragment();
        newFragment.show(getFragmentManager(),"DialogTag");
    }
 

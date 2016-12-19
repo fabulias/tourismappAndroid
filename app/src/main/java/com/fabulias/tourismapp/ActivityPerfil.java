@@ -75,6 +75,7 @@ public class ActivityPerfil extends AppCompatActivity {
         mProgressView = findViewById(R.id.perfil_progress);
 
         SharedPreferences preferences= getSharedPreferences("DataUser", Context.MODE_PRIVATE);
+
         String pass=preferences.getString("pass", null);
         String name=preferences.getString("name", null);
         String surname=preferences.getString("surname",null);
@@ -340,7 +341,6 @@ public class ActivityPerfil extends AppCompatActivity {
         }
 
         protected void SetDataUser(JSONObject userData) throws JSONException {
-            System.out.println("HOLA AQUI ESTOY JEJEJEJ");
             SharedPreferences preferences=getSharedPreferences("DataUser",Context.MODE_PRIVATE);
             SharedPreferences.Editor editor=preferences.edit();
             editor.putString("pass", userData.getString("pass"));

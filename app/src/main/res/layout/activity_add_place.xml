@@ -16,7 +16,8 @@
         android:layout_width="230dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:layout_gravity="center_horizontal"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -46,15 +47,16 @@
             android:orientation="vertical">
 
 
-             <EditText
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/colorPrimaryDark"
-                android:hint="@string/name_shareplace"
-                android:inputType="textPersonName"
-                android:id="@+id/namePlace"
-                 android:layout_below="@+id/addPlace_form"/>
-              <EditText
+            <EditText
+               android:layout_width="fill_parent"
+               android:layout_height="wrap_content"
+               android:backgroundTint="@color/colorPrimaryDark"
+               android:hint="@string/name_shareplace"
+               android:inputType="textPersonName"
+               android:id="@+id/namePlace"
+                android:layout_below="@+id/addPlace_form"/>
+
+            <EditText
                  android:layout_width="match_parent"
                  android:layout_height="wrap_content"
                  android:backgroundTint="@color/colorPrimaryDark"
@@ -62,7 +64,8 @@
                  android:inputType="textPersonName"
                  android:id="@+id/description"
                  android:layout_below="@+id/namePlace"/>
-             <EditText
+
+            <EditText
                  android:layout_width="match_parent"
                  android:layout_height="wrap_content"
                  android:backgroundTint="@color/colorPrimaryDark"
@@ -183,12 +186,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:background="@color/black"
+                android:background="@color/primaryColor"
                 android:text="@string/tags"
                 android:id="@+id/selectTags"
                 android:onClick="onButtonClickedSelectedTags"
                 />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/geo"
+                />
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -199,6 +207,8 @@
                 android:textColor="#fff"
 
                 />
+
+
 
         </LinearLayout>
 
