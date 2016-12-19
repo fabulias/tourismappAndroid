@@ -549,7 +549,6 @@ public class ActivityAddPlace extends AppCompatActivity implements
 
             SharedPreferences preferences = getSharedPreferences("DataUser", Context.MODE_PRIVATE);
             nameUser = preferences.getString("mail", null);
-            nameUser = "farid@mail.com";
             System.out.println("Aqui la obtiene " + nameUser);
             Date date = new Date();
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");

@@ -1,22 +1,18 @@
 package com.fabulias.tourismapp;
 
 import android.app.DialogFragment;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
-public class AuxActivity extends AppCompatActivity {
+public class SharePreferenceActivity extends AppCompatActivity {
 
     private int radio = 0;
     @Override
@@ -28,8 +24,8 @@ public class AuxActivity extends AppCompatActivity {
         final TextView textViewSeekBar = (TextView) findViewById(R.id.distance);
         textViewSeekBar.setText("0");
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                                              /* private Toast toastStart = Toast.makeText(AuxActivity.this,getText(R.string.aux1),Toast.LENGTH_SHORT);
-                                               private Toast toastStop = Toast.makeText(AuxActivity.this, getText(R.string.aux2), Toast.LENGTH_SHORT); */
+                                              /* private Toast toastStart = Toast.makeText(SharePreferenceActivity.this,getText(R.string.aux1),Toast.LENGTH_SHORT);
+                                               private Toast toastStop = Toast.makeText(SharePreferenceActivity.this, getText(R.string.aux2), Toast.LENGTH_SHORT); */
                                                @Override
                                                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                                                    textViewSeekBar.setText(progress + "");
@@ -66,8 +62,8 @@ public class AuxActivity extends AppCompatActivity {
                 editor.apply();
                 finish();
 
-                Intent myIntent = new Intent(AuxActivity.this, MainActivity.class);
-                AuxActivity.this.startActivity(myIntent);
+                Intent myIntent = new Intent(SharePreferenceActivity.this, MainActivity.class);
+                SharePreferenceActivity.this.startActivity(myIntent);
 
 
 

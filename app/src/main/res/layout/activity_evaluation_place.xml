@@ -78,6 +78,7 @@
                     android:layout_width="207dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
+                    android:id="@+id/scoreUser"
                     android:numStars="5"
                     android:rating="0.0"
                     />
