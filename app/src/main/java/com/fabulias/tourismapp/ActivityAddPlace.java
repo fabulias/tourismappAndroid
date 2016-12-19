@@ -3,12 +3,20 @@ package com.fabulias.tourismapp;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -24,7 +32,12 @@ import android.widget.Toast;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.identity.intents.Address;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.vision.barcode.Barcode;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,6 +48,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -42,9 +56,13 @@ import java.net.URL;
 import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-public class ActivityAddPlace extends AppCompatActivity {
+public class ActivityAddPlace extends AppCompatActivity implements
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
 
     public final static String EXTRA_MESSAGE = "com.fabulias.register.MESSAGE";
     private PlaceRegisterTask mAuthTask = null;
@@ -59,14 +77,23 @@ public class ActivityAddPlace extends AppCompatActivity {
 
     private View mProgressView;
     private View mRegisterView;
+
+    private TextView mGeo;
+    private double Latitud;
+    private double Longitud;
+
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
+    private Bundle aux;
+    private JSONObject geoCoord;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        aux = savedInstanceState;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_place);
 
@@ -89,10 +116,83 @@ public class ActivityAddPlace extends AppCompatActivity {
         mRegisterView = findViewById(R.id.addPlace_form);
         mProgressView = findViewById(R.id.addPlace_progress);
 
+        mGeo = (TextView) findViewById(R.id.geo);
+
+        /*
+        LocationManager mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        GeoLocal Local = new GeoLocal();
+        Local.setActivityAddPlace(this);
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+
+        mlocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, (android.location.LocationListener) Local);
+*/
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+         client = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+
+    }
+
+
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        client.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        client.disconnect();
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundel) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(client);
+        if (mLastLocation != null){
+            Latitud=mLastLocation.getLatitude();
+            Longitud=mLastLocation.getLongitude();
+
+        }
+
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 
     private void save() {
@@ -152,7 +252,8 @@ public class ActivityAddPlace extends AppCompatActivity {
             String url = "http://ttourismapp.herokuapp.com/api/v1/places";
             String url_sc = "https://ttourismapp.herokuapp.com/api/v1/schedules";
             String url_tag = "https://ttourismapp.herokuapp.com/api/v1/tags_places";
-            mAuthTask.execute(url, url_sc, url_tag);
+            String url_geo = "https://ttourismapp.herokuapp.com/api/v1/geocoords";
+            mAuthTask.execute(url, url_sc, url_tag, url_geo);
         }
     }
 
@@ -211,25 +312,6 @@ public class ActivityAddPlace extends AppCompatActivity {
                 .build();
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        AppIndex.AppIndexApi.start(client, getIndexApiAction());
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        AppIndex.AppIndexApi.end(client, getIndexApiAction());
-        client.disconnect();
-    }
 
 
     private class PlaceRegisterTask extends AsyncTask<String, String, String> {
@@ -258,12 +340,14 @@ public class ActivityAddPlace extends AppCompatActivity {
         HttpURLConnection urlConnection;
         HttpURLConnection urlConnect;
         HttpURLConnection urlTagConnect;
+        HttpURLConnection urlGeoConnect;
 
         @Override
         protected String doInBackground(String... params) {
             StringBuilder result = new StringBuilder();
             StringBuilder resulted = new StringBuilder();
             StringBuilder result_tag = new StringBuilder();
+            StringBuilder resulted_geo= new StringBuilder();
             try {
                 URL url = new URL(params[0]);
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -275,6 +359,7 @@ public class ActivityAddPlace extends AppCompatActivity {
                 JSONObject jsonPlace;
                 JSONObject jsonSchedule;
                 JSONArray jsonTag;
+                JSONObject jsonGeoCoord;
 
                 jsonPlace = setJsonPlace(mNamePlace, mPhone, mDescription);
                 System.out.println("INICIO");
@@ -381,8 +466,32 @@ public class ActivityAddPlace extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     urlTagConnect=null;
-
                 }
+
+
+                //New Request to GeoCoords
+                jsonGeoCoord=setJsonGeocoord(id_place);
+                System.out.println(jsonGeoCoord);
+                URL urlGeocoord= new URL(params[3]);
+                urlGeoConnect =(HttpURLConnection) urlGeocoord.openConnection();
+                urlGeoConnect.setRequestMethod("POST");
+                urlGeoConnect.setRequestProperty("Content-Type","application/json");
+                DataOutputStream esc_geo = new DataOutputStream(urlGeoConnect.getOutputStream());
+                esc_geo.writeBytes(jsonGeoCoord.toString());
+                esc_geo.flush();
+                esc_geo.close();
+                InputStream en_geo = null;
+                try {
+                    en_geo = urlGeoConnect.getInputStream();
+                } catch(FileNotFoundException e) {
+                    en_geo = urlGeoConnect.getErrorStream();
+                }
+                BufferedReader read_geo = new BufferedReader(new InputStreamReader(en_geo));
+                String linea_geo;
+                while ((linea_geo = read_geo.readLine()) != null) {
+                    resulted_geo.append(linea_geo);
+                }
+
 
 
 
@@ -398,21 +507,28 @@ public class ActivityAddPlace extends AppCompatActivity {
                 }
 
             }
+
+
+
+
+
             JSONObject jsonObjPlace = null;
             JSONObject jsonObjSchedule = null;
+            JSONObject jsonObjGeoCoord = null ;
 
 
 
             try {
                 jsonObjPlace = new JSONObject(result.toString());
                 jsonObjSchedule = new JSONObject(resulted.toString());
+                jsonObjGeoCoord = new JSONObject(resulted_geo.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
                 return "";
             }
 
             try {
-                if (jsonObjSchedule.getString("status").equals("success") && jsonObjPlace.getString("status").equals("success") && cont_tag>0) {
+                if (jsonObjSchedule.getString("status").equals("success") && jsonObjPlace.getString("status").equals("success") && jsonObjGeoCoord.getString("status").equals("success")&& cont_tag>0) {
                     System.out.println("Success from API Good :) !!!");
                     return ".";
                 } else {
@@ -485,6 +601,8 @@ public class ActivityAddPlace extends AppCompatActivity {
 
 
         }
+
+
         JSONArray setJsonTag(int idPlace){
             JSONArray TagJson= new JSONArray();
 
@@ -510,6 +628,22 @@ public class ActivityAddPlace extends AppCompatActivity {
             System.out.println(TagJson);
             return TagJson;
 
+
+        }
+
+
+        JSONObject setJsonGeocoord(int idPlace){
+            JSONObject geoCoord= new JSONObject();
+
+            try{
+                geoCoord.put("id", idPlace);
+                geoCoord.put("lat", Latitud);
+                geoCoord.put("lng", Longitud);
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return geoCoord;
 
         }
 

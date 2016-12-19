@@ -1,8 +1,7 @@
 package com.fabulias.tourismapp;
 
-
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,38 +14,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class EvaluationFragment extends Fragment{
 
-    public EvaluationFragment() {
-        // Required empty public constructor
-    }
-
+public class EvaluationPlace extends AppCompatActivity {
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        List<Comentario> items = new ArrayList<Comentario>();
-        items.add(new Comentario("Maximiliano","El lugar era hermoso"));
-        items.add(new Comentario("Farid","La atención era mala"));
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_evaluation_place);
 
-        RecyclerView recycler = (RecyclerView) container.findViewById(R.id.rv);
-        recycler.setHasFixedSize(true);
+        RecyclerView rv= (RecyclerView)findViewById(R.id.rv);
 
-        RecyclerView.LayoutManager lManager = new LinearLayoutManager(this.getContext());
-        recycler.setLayoutManager(lManager);
+        
 
-        RecyclerView.Adapter<ComentarioAdapter.ComentarioViewHolder> adapter = new ComentarioAdapter(items);
-        recycler.setAdapter(adapter);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        rv.setLayoutManager(llm);
 
+        initilizeData();
+        ComentarioAdapter adapter = new ComentarioAdapter(comment);
+        rv.setAdapter(adapter);
 
-
-
-        return inflater.inflate(R.layout.fragment_evaluation, container, false);
     }
+
 
     public class Comentario {
         private String nameUser;
@@ -65,8 +53,17 @@ public class EvaluationFragment extends Fragment{
         }
 
     }
-    public static class ComentarioAdapter extends RecyclerView.Adapter<ComentarioAdapter.ComentarioViewHolder>{
-        private List<Comentario> items;
+    private List<Comentario> comment;
+
+    private void initilizeData(){
+        comment = new ArrayList<>();
+        comment.add(new Comentario("Maximiliano", "Buen lugar es lindo"));
+        comment.add(new Comentario("Farid", "Estaba bonito el lugar"));
+
+    }
+
+    public static class ComentarioAdapter extends RecyclerView.Adapter<EvaluationPlace.ComentarioAdapter.ComentarioViewHolder>{
+        private List<EvaluationPlace.Comentario> items;
 
         static class ComentarioViewHolder extends RecyclerView.ViewHolder{
             TextView mNameUser;
@@ -80,8 +77,8 @@ public class EvaluationFragment extends Fragment{
                 mPhoto =(ImageView) v.findViewById(R.id.photoUser);
             }
         }
-        ComentarioAdapter(List<Comentario> items){
-            this.items=items;
+        ComentarioAdapter(List<EvaluationPlace.Comentario> comment){
+            this.items=comment;
         }
         @Override
         public int getItemCount() {
@@ -89,19 +86,18 @@ public class EvaluationFragment extends Fragment{
         }
 
         @Override
-        public ComentarioViewHolder onCreateViewHolder(ViewGroup viewGroup, int i ){
+        public EvaluationPlace.ComentarioAdapter.ComentarioViewHolder onCreateViewHolder(ViewGroup viewGroup, int i ){
             View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.fragment_comment, viewGroup, false);
-            return new ComentarioViewHolder(v);
+            return new EvaluationPlace.ComentarioAdapter.ComentarioViewHolder(v);
         }
 
         @Override
-        public void onBindViewHolder(ComentarioViewHolder viewHolder, int i ){
+        public void onBindViewHolder(EvaluationPlace.ComentarioAdapter.ComentarioViewHolder viewHolder, int i ){
             viewHolder.mNameUser.setText(items.get(i).getNameUser());
             viewHolder.mCommentUser.setText(items.get(i).getCommentUser());
         }
+
     }
-
-
 
 
 

@@ -399,7 +399,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // TODO: register the new account here!
         }
 
-        protected void SetDataUser(JSONObject userData) throws JSONException {
+        void SetDataUser(JSONObject userData) throws JSONException {
             SharedPreferences preferences=getSharedPreferences("DataUser",Context.MODE_PRIVATE);
             SharedPreferences.Editor editor=preferences.edit();
             editor.putString("mail", userData.getString("mail"));
