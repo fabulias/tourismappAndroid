@@ -68,12 +68,12 @@ public class MainActivity extends AppCompatActivity
         OnMapReadyCallback {
 
     private MarketsTask mAuthTask = null;
+    private PlaceTask mPlaceTask = null;
     private GoogleMap mMap;
     private static final int LOCATION_REQUEST_CODE = 1;
-    //private List<Market> list = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        System.out.println("Aqui voy en MainActivity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -174,7 +174,6 @@ public class MainActivity extends AppCompatActivity
             mMap.setMyLocationEnabled(true);
 
         } else {
-            System.out.println("aqui no habian permisos creo");
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     android.Manifest.permission.ACCESS_FINE_LOCATION)) {
                 // Mostrar diálogo explicativo
@@ -211,10 +210,17 @@ public class MainActivity extends AppCompatActivity
         if (mAuthTask != null) {
             return;
         }
+        if (mPlaceTask != null) {
+            return;
+        }
 
-        SharedPreferences prefs = getSharedPreferences("Search", MODE_PRIVATE);
-        String radius = prefs.getString("radius", "1");
-        Map<String,?> keys = prefs.getAll();
+        SharedPreferences prefs = getSharedPreferences("DataTag", MODE_PRIVATE);
+        Map<String,?> keys = prefs.getAll(); //info
+
+        SharedPreferences pref = getSharedPreferences("ratio", MODE_PRIVATE);
+        String radius = pref.getString("ratio", "1"); //info
+
+
         if (radius.equals("1")) {
             Toast toast = Toast.makeText(this, "Se muestran los locales a 1 Km de distancia.", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
@@ -230,14 +236,59 @@ public class MainActivity extends AppCompatActivity
         try {
             JSONArray json = execute.get();
             if (json != null) {
-                System.out.println("Objeto ->" + json);
+                if (false) { //keys.isEmpty()) {
+                    for (int ix = 0; ix < json.length(); ix++) {
+                        JSONObject tmp = json.getJSONObject(ix);
+                        System.out.println("id 1 -> " + tmp.getString("id"));
+                        System.out.println("lat 1 -> " + tmp.getDouble("lat"));
+                        System.out.println("lng 1 -> " + tmp.getDouble("lng"));
 
-                for (int ix = 0; ix < json.length(); ix++) {
-                    JSONObject tmp = json.getJSONObject(ix);
-                    System.out.println("id -> " + tmp.getInt("id"));
-                    System.out.println("lat -> " + tmp.getDouble("lat"));
-                    System.out.println("lng -> " + tmp.getDouble("lng"));
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(tmp.getDouble("lat"), tmp.getDouble("lng"))).title("Marcador"));
+                        mPlaceTask = new MainActivity.PlaceTask();
+                        String uri_tmp = "https://ttourismapp.herokuapp.com/api/v1/places/"+tmp.getString("id");
+                        AsyncTask<String, String, JSONArray> exec = mPlaceTask.execute(uri_tmp);
+                        JSONArray j = exec.get();
+                        if (j != null) {
+                            System.out.println("Este es mi json" + j);
+                        }
+                        JSONObject obj = j.getJSONObject(0);
+                        mMap.addMarker(new MarkerOptions().position(new LatLng(tmp.getDouble("lat"), tmp.getDouble("lng"))).title("Nombre: " + obj.getString("name")+", Telefono: "+obj.getString("phone")));//+"\n"+obj.getString("phone")));
+                    }
+                } else {
+
+
+                    for (int ix = 0; ix < json.length(); ix++) {
+                        JSONObject tmp = json.getJSONObject(ix);
+                        System.out.println("id 2 -> " + tmp.getString("id"));
+                        System.out.println("lat 2 -> " + tmp.getDouble("lat"));
+                        System.out.println("lng 2 -> " + tmp.getDouble("lng"));
+
+                        mPlaceTask = new MainActivity.PlaceTask();
+                        String uri_tmp = "https://ttourismapp.herokuapp.com/api/v1/places/"+tmp.getString("id");
+                        AsyncTask<String, String, JSONArray> exec = mPlaceTask.execute(uri_tmp);
+                        JSONArray j = exec.get();
+                        if (j != null) {
+                            System.out.println("aqui estoy yooo....");
+                            System.out.println(j);
+                            for (Map.Entry<String, ?> entry : keys.entrySet()) {
+                                String val = entry.getValue().toString();
+                                System.out.println("tags -> " + val);
+
+                                mPlaceTask = new MainActivity.PlaceTask();
+                                String uri_ = "https://ttourismapp.herokuapp.com/api/v1/tagsplace?idp="+tmp.getString("id")+"&idt"+val;
+                                AsyncTask<String, String, JSONArray> exe = mPlaceTask.execute(uri_);
+                                //Aqui obtengo el
+                                JSONArray jobj = exe.get();
+                                System.out.println("Este es mi json" + jobj);
+                                if (jobj != null) {
+                                    JSONObject obj = j.getJSONObject(0);
+                                    mMap.addMarker(new MarkerOptions().position(new LatLng(tmp.getDouble("lat"), tmp.getDouble("lng"))).title("Nombre: " + obj.getString("name")+", Telefono: "+obj.getString("phone")));
+                                }
+                                System.out.println(jobj);
+
+                            }
+                        }
+
+                    }
                 }
             }
 
@@ -365,6 +416,76 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    public class PlaceTask extends AsyncTask<String, String, JSONArray> {
+
+        HttpURLConnection urlConnection;
+
+        @Override
+        protected JSONArray doInBackground(String... params) {
+            StringBuilder result = new StringBuilder();
+
+            try {
+                String uri = params[0];
+                System.out.println(uri);
+                URL url = new URL(uri);
+                urlConnection = (HttpURLConnection) url.openConnection();
+
+                int status = urlConnection.getResponseCode();
+                System.out.println(status);
+                InputStream in = null;
+                try {
+                    in = urlConnection.getInputStream();
+                } catch(FileNotFoundException e) {
+                    in = urlConnection.getErrorStream();
+                }
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    result.append(line);
+                }
+
+            }catch( Exception e) {
+                System.out.println("AQUI VOY YOOOO");
+                e.printStackTrace();
+                return null;
+            }
+            finally {
+                urlConnection.disconnect();
+            }
+            JSONObject jsonObj = null;
+            try {
+                jsonObj = new JSONObject(result.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
+            try {
+                if (jsonObj.getString("status").equals("success")) {
+                    JSONArray c = jsonObj.getJSONArray("data");
+                    return c;
+                    /*JSONObject jobj = c.getJSONObject(1);
+                    System.out.println("Success from API Good :) !!!");
+                    System.out.println(jobj.getInt("id"));
+                    System.out.println(jobj.getDouble("lat"));
+                    System.out.println(jobj.getDouble("lng"));
+                    //list.add(new Market(jobj.getInt("id"), jobj.getDouble("lat"), jobj.getDouble("lng")));
+                    System.out.println(jobj.toString());
+                    //return jobj;*/
+                } else {
+                    System.out.println("Error from API Bad :( !!!");
+                    return null;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mAuthTask = null;
+        }
+    }
 
     @Override
     public boolean onSupportNavigateUp() {
