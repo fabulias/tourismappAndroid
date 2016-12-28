@@ -43,8 +43,8 @@ public class EvaluationPlace extends AppCompatActivity {
         Button evaluation=(Button)findViewById(R.id.Evaluation);
         mComment=(EditText) findViewById(R.id.comentario);
         mScore=(RatingBar)findViewById(R.id.scoreUser);
-        int id_place=(int) getIntent().getExtras().getSerializable("id");
-        String name_place=(String) getIntent().getExtras().getSerializable("name_place");
+        //int id_place=(int) getIntent().getExtras().getSerializable("id");
+        String name_place="Bar de moe";//(String) getIntent().getExtras().getSerializable("name_place");
          mNamePlace=name_place;
         TextView titleName=(TextView)  findViewById(R.id.namePlace);
         RatingBar scorePlace=(RatingBar) findViewById(R.id.scorePlace);

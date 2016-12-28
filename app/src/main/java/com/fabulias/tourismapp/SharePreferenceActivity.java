@@ -58,7 +58,7 @@ public class SharePreferenceActivity extends AppCompatActivity {
             public void onClick(View v) {
                 SharedPreferences pref= getSharedPreferences("ratio",Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = pref.edit();
-                editor.putInt("ratio",radio);
+                editor.putInt("ratio", radio);
                 editor.apply();
                 finish();
 

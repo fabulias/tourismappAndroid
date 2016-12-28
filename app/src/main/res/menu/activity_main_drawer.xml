@@ -6,11 +6,16 @@
             android:id="@+id/preferences_main"
             android:icon="@drawable/ic_menu_gallery"
             android:title="@string/preferences" />
-        <!--
+
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/add_place"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="" />
+            android:title="Agregar un lugar" />
+        <item
+            android:id="@+id/evaluation"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Evaluar un lugar" />
+        <!--
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"

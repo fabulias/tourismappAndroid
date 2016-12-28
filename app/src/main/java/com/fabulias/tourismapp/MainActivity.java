@@ -143,9 +143,14 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.preferences_main) {
-            // Handle the camera action
-        } else if (id == R.id.comentaries_main) {
-
+            Intent myIntent = new Intent(MainActivity.this, SharePreferenceActivity.class);
+            startActivity(myIntent);
+        } else if (id == R.id.add_place) {
+            Intent myIntent = new Intent(MainActivity.this, ActivityAddPlace.class);
+            startActivity(myIntent);
+        } else if (id == R.id.evaluation) {
+            Intent myIntent = new Intent(MainActivity.this, EvaluationPlace.class);
+            startActivity(myIntent);
         } else if (id == R.id.settings_main) {
             Intent myIntent = new Intent(MainActivity.this, ActivityPerfil.class);
             startActivity(myIntent);
@@ -172,7 +177,6 @@ public class MainActivity extends AppCompatActivity
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
-
         } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     android.Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -218,10 +222,10 @@ public class MainActivity extends AppCompatActivity
         Map<String,?> keys = prefs.getAll(); //info
 
         SharedPreferences pref = getSharedPreferences("ratio", MODE_PRIVATE);
-        String radius = pref.getString("ratio", "1"); //info
+        int radius = pref.getInt("ratio", 1); //info
 
 
-        if (radius.equals("1")) {
+        if (radius == 1) {
             Toast toast = Toast.makeText(this, "Se muestran los locales a 1 Km de distancia.", Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
             toast.show();
@@ -236,7 +240,7 @@ public class MainActivity extends AppCompatActivity
         try {
             JSONArray json = execute.get();
             if (json != null) {
-                if (false) { //keys.isEmpty()) {
+                if (keys.isEmpty()) {
                     for (int ix = 0; ix < json.length(); ix++) {
                         JSONObject tmp = json.getJSONObject(ix);
                         System.out.println("id 1 -> " + tmp.getString("id"));
@@ -274,7 +278,7 @@ public class MainActivity extends AppCompatActivity
                                 System.out.println("tags -> " + val);
 
                                 mPlaceTask = new MainActivity.PlaceTask();
-                                String uri_ = "https://ttourismapp.herokuapp.com/api/v1/tagsplace?idp="+tmp.getString("id")+"&idt"+val;
+                                String uri_ = "https://ttourismapp.herokuapp.com/api/v1/tags_place?idp="+tmp.getInt("id")+"&idt="+val;
                                 AsyncTask<String, String, JSONArray> exe = mPlaceTask.execute(uri_);
                                 //Aqui obtengo el
                                 JSONArray jobj = exe.get();
@@ -283,7 +287,7 @@ public class MainActivity extends AppCompatActivity
                                     JSONObject obj = j.getJSONObject(0);
                                     mMap.addMarker(new MarkerOptions().position(new LatLng(tmp.getDouble("lat"), tmp.getDouble("lng"))).title("Nombre: " + obj.getString("name")+", Telefono: "+obj.getString("phone")));
                                 }
-                                System.out.println(jobj);
+                                //System.out.println(jobj);
 
                             }
                         }
@@ -336,8 +340,8 @@ public class MainActivity extends AppCompatActivity
     public class MarketsTask extends AsyncTask<String, String, JSONArray> {
         private final double lat;
         private final double lng;
-        private final String radius;
-        MarketsTask(double latitude, double longitude, String rad) {
+        private final int radius;
+        MarketsTask(double latitude, double longitude, int rad) {
             lat = latitude;
             lng = longitude;
             radius = rad;
@@ -351,7 +355,7 @@ public class MainActivity extends AppCompatActivity
 
             try {
                 String uri;
-                if (radius != null)
+                if (radius != 1)
                     uri = params[0] + lat + "/" + lng + "/" + radius;
                 else
                     uri = params[0] + lat + "/" + lng + "/1";
@@ -483,7 +487,7 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         protected void onCancelled() {
-            mAuthTask = null;
+            mPlaceTask = null;
         }
     }
 
